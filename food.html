@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>طلباتك | منصة طلب الطعام</title>
+    <!-- FontAwesome للأيقونات -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #ff5a00;
+            --primary-hover: #e04f00;
+            --bg-dark: #0f172a;
+            --card-bg: #1e293b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent-green: #22c55e;
+            --border-color: #334155;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            min-height: 100vh;
+            padding-bottom: 50px;
+        }
+
+        /* Navbar */
+        .navbar {
+            background-color: rgba(30, 41, 59, 0.95);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid var(--border-color);
+            padding: 15px 20px;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 900;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+
+        .search-box {
+            flex: 1;
+            max-width: 450px;
+            position: relative;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 10px 40px 10px 15px;
+            border-radius: 25px;
+            border: 1px solid var(--border-color);
+            background-color: var(--bg-dark);
+            color: #fff;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .search-box i {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .btn-action {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
+            color: white;
+            border: none;
+            padding: 9px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: 0.3s;
+        }
+
+        .btn-action:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(255, 90, 0, 0.4);
+        }
+
+        .cart-btn {
+            background-color: var(--bg-dark);
+            border: 1px solid var(--border-color);
+            position: relative;
+        }
+
+        .cart-count {
+            position: absolute;
+            top: -5px;
+            left: -5px;
+            background-color: var(--primary-color);
+            color: white;
+            font-size: 11px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        /* Container & Categories */
+        .main-container {
+            max-width: 1200px;
+            margin: 25px auto;
+            padding: 0 15px;
+        }
+
+        .categories {
+            display: flex;
+            gap: 12px;
+            overflow-x: auto;
+            padding-bottom: 10px;
+            margin-bottom: 25px;
+        }
+
+        .category-btn {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 10px 20px;
+            border-radius: 20px;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+        }
+
+        .category-btn.active, .category-btn:hover {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            color: white;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Restaurants Grid */
+        .restaurants-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .restaurant-card {
+            background-color: var(--card-bg);
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            transition: 0.3s;
+            cursor: pointer;
+        }
+
+        .restaurant-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            border-color: var(--primary-color);
+        }
+
+        .restaurant-img {
+            width: 100%;
+            height: 160px;
+            object-fit: cover;
+        }
+
+        .restaurant-info {
+            padding: 15px;
+        }
+
+        .restaurant-name {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .restaurant-cat {
+            color: var(--text-muted);
+            font-size: 13px;
+            margin-bottom: 12px;
+        }
+
+        .restaurant-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            color: var(--text-muted);
+            border-top: 1px solid var(--border-color);
+            padding-top: 10px;
+        }
+
+        .rating {
+            color: #f59e0b;
+            font-weight: bold;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 15px;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background-color: var(--card-bg);
+            border-radius: 20px;
+            width: 100%;
+            max-width: 600px;
+            max-height: 85vh;
+            overflow-y: auto;
+            border: 1px solid var(--border-color);
+            position: relative;
+            padding: 25px;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            font-size: 20px;
+            color: var(--text-muted);
+            cursor: pointer;
+        }
+
+        /* Cart Sidebar */
+        .cart-sidebar {
+            position: fixed;
+            top: 0;
+            left: -400px;
+            width: 100%;
+            max-width: 380px;
+            height: 100%;
+            background-color: var(--card-bg);
+            z-index: 1100;
+            box-shadow: 5px 0 25px rgba(0, 0, 0, 0.5);
+            transition: 0.4s ease;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            border-right: 1px solid var(--border-color);
+        }
+
+        .cart-sidebar.open {
+            left: 0;
+        }
+
+        .cart-items {
+            flex: 1;
+            overflow-y: auto;
+            margin: 15px 0;
+        }
+
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 10px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            background-color: var(--bg-dark);
+            color: #fff;
+            outline: none;
+        }
+
+        .menu-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .menu-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            background-color: var(--bg-dark);
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="#" class="logo"><i class="fa-solid fa-utensils"></i> طلباتك</a>
+            <div class="search-box">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="searchInput" placeholder="ابحث عن مطعم أو وجبة..." onkeyup="filterRestaurants()">
+            </div>
+            <div class="nav-actions">
+                <button class="btn-action" onclick="openModal('addRestaurantModal')"><i class="fa-solid fa-plus"></i> إضافة مطعم</button>
+                <button class="btn-action cart-btn" onclick="toggleCart()"><i class="fa-solid fa-cart-shopping"></i> <span class="cart-count" id="cartCount">0</span></button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-container">
+        <!-- Categories -->
+        <div class="categories">
+            <button class="category-btn active" onclick="filterCategory('all', this)"><i class="fa-solid fa-border-all"></i> الكل</button>
+            <button class="category-btn" onclick="filterCategory('fastfood', this)"><i class="fa-solid fa-burger"></i> وجبات سريعة</button>
+            <button class="category-btn" onclick="filterCategory('pizza', this)"><i class="fa-solid fa-pizza-slice"></i> بيتزا</button>
+            <button class="category-btn" onclick="filterCategory('grill', this)"><i class="fa-solid fa-drumstick-bite"></i> مشاوي</button>
+            <button class="category-btn" onclick="filterCategory('sweets', this)"><i class="fa-solid fa-ice-cream"></i> حلويات</button>
+        </div>
+
+        <h2 class="section-title"><i class="fa-solid fa-store" style="color: var(--primary-color);"></i> المطاعم المتاحة</h2>
+        
+        <!-- Restaurants Grid -->
+        <div class="restaurants-grid" id="restaurantsContainer"></div>
+    </div>
+
+    <!-- Modal: Menu -->
+    <div class="modal" id="menuModal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal('menuModal')">&times;</span>
+            <h2 id="modalRestName" style="color: var(--primary-color); margin-bottom: 5px;"></h2>
+            <p id="modalRestCat" style="color: var(--text-muted); font-size: 13px; margin-bottom: 15px;"></p>
+            <h3>قائمة الطعام</h3>
+            <div class="menu-grid" id="menuContainer"></div>
+        </div>
+    </div>
+
+    <!-- Modal: Add Restaurant -->
+    <div class="modal" id="addRestaurantModal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal('addRestaurantModal')">&times;</span>
+            <h2 style="color: var(--primary-color); margin-bottom: 15px;">إضافة مطعم جديد</h2>
+            <form id="addRestForm" onsubmit="handleAddRestaurant(event)">
+                <div class="form-group">
+                    <label>اسم المطعم</label>
+                    <input type="text" id="newRestName" required placeholder="مثال: برغر هاوس">
+                </div>
+                <div class="form-group">
+                    <label>الفئة</label>
+                    <select id="newRestCat">
+                        <option value="fastfood">وجبات سريعة</option>
+                        <option value="pizza">بيتزا</option>
+                        <option value="grill">مشاوي</option>
+                        <option value="sweets">حلويات</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>رابط صورة المطعم</label>
+                    <input type="url" id="newRestImg" required placeholder="https://example.com/image.jpg">
+                </div>
+                <div class="form-group">
+                    <label>اسم الوجبة الأولى ورابط الصورة والسعر</label>
+                    <input type="text" id="newItemName" required placeholder="اسم الوجبة (مثال: تشيز برغر)">
+                    <input type="number" id="newItemPrice" required placeholder="السعر د.ع" style="margin-top: 5px;">
+                </div>
+                <button type="submit" class="btn-action" style="width: 100%; justify-content: center; margin-top: 10px;">إضافة المطعم</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Cart Sidebar -->
+    <div class="cart-sidebar" id="cartSidebar">
+        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 10px;">
+            <h3>سلة التسوق <i class="fa-solid fa-basket-shopping" style="color: var(--primary-color);"></i></h3>
+            <span style="cursor: pointer; font-size: 20px;" onclick="toggleCart()">&times;</span>
+        </div>
+        <div class="cart-items" id="cartItemsContainer"></div>
+        <div style="border-top: 1px solid var(--border-color); padding-top: 15px;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                <span>المجموع:</span>
+                <span id="cartTotal" style="color: var(--primary-color); font-weight: bold;">0 د.ع</span>
+            </div>
+            <button class="btn-action" style="width: 100%; justify-content: center;" onclick="checkout()">إتمام الطلب</button>
+        </div>
+    </div>
+
+    <script>
+        // البيانات الأولية للمطاعم
+        let restaurants = [
+            {
+                id: 1,
+                name: "برغر اكسبرس",
+                category: "fastfood",
+                image: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=500",
+                rating: "4.8",
+                time: "20-30 دقيقة",
+                menu: [
+                    { id: 101, name: "كلاسيك برغر", price: 6000 },
+                    { id: 102, name: "دبل تشيز برغر", price: 8500 },
+                    { id: 103, name: "بطاطا مقلية", price: 2500 }
+                ]
+            },
+            {
+                id: 2,
+                name: "بيتزا روما",
+                category: "pizza",
+                image: "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=500",
+                rating: "4.6",
+                time: "30-40 دقيقة",
+                menu: [
+                    { id: 201, name: "بيتزا مارغريتا", price: 9000 },
+                    { id: 202, name: "بيتزا بيبروني", price: 11000 }
+                ]
+            },
+            {
+                id: 3,
+                name: "مشاوي السفير",
+                category: "grill",
+                image: "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=500",
+                rating: "4.9",
+                time: "35-50 دقيقة",
+                menu: [
+                    { id: 301, name: "كباب لحم (كيلو)", price: 24000 },
+                    { id: 302, name: "شيش طاووق", price: 12000 }
+                ]
+            }
+        ];
+
+        let cart = [];
+
+        // عرض المطاعم
+        function renderRestaurants(data = restaurants) {
+            const container = document.getElementById('restaurantsContainer');
+            container.innerHTML = '';
+            
+            data.forEach(rest => {
+                container.innerHTML += `
+                    <div class="restaurant-card" onclick="openMenu(${rest.id})">
+                        <img src="${rest.image}" class="restaurant-img" alt="${rest.name}">
+                        <div class="restaurant-info">
+                            <div class="restaurant-name">${rest.name}</div>
+                            <div class="restaurant-cat">${getCategoryName(rest.category)}</div>
+                            <div class="restaurant-meta">
+                                <span class="rating"><i class="fa-solid fa-star"></i> ${rest.rating}</span>
+                                <span><i class="fa-regular fa-clock"></i> ${rest.time}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function getCategoryName(cat) {
+            const names = { fastfood: "وجبات سريعة", pizza: "بيتزا", grill: "مشاوي", sweets: "حلويات" };
+            return names[cat] || cat;
+        }
+
+        // تصفية المطاعم
+        function filterCategory(category, btn) {
+            document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            if (category === 'all') {
+                renderRestaurants(restaurants);
+            } else {
+                const filtered = restaurants.filter(r => r.category === category);
+                renderRestaurants(filtered);
+            }
+        }
+
+        function filterRestaurants() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            const filtered = restaurants.filter(r => r.name.toLowerCase().includes(query));
+            renderRestaurants(filtered);
+        }
+
+        // فتح قائمة طعام المطعم
+        function openMenu(restId) {
+            const rest = restaurants.find(r => r.id === restId);
+            document.getElementById('modalRestName').innerText = rest.name;
+            document.getElementById('modalRestCat').innerText = getCategoryName(rest.category);
+            
+            const menuContainer = document.getElementById('menuContainer');
+            menuContainer.innerHTML = '';
+            
+            rest.menu.forEach(item => {
+                menuContainer.innerHTML += `
+                    <div class="menu-item">
+                        <div>
+                            <div style="font-weight: bold;">${item.name}</div>
+                            <div style="color: var(--primary-color); font-size: 14px;">${item.price.toLocaleString()} د.ع</div>
+                        </div>
+                        <button class="btn-action" onclick="addToCart('${item.name}', ${item.price})"><i class="fa-solid fa-plus"></i> إضافة</button>
+                    </div>
+                `;
+            });
+
+            openModal('menuModal');
+        }
+
+        // إدار السلة
+        function addToCart(name, price) {
+            const existing = cart.find(item => item.name === name);
+            if (existing) {
+                existing.qty++;
+            } else {
+                cart.push({ name, price, qty: 1 });
+            }
+            updateCart();
+        }
+
+        function updateCart() {
+            const cartContainer = document.getElementById('cartItemsContainer');
+            cartContainer.innerHTML = '';
+            let total = 0;
+            let count = 0;
+
+            cart.forEach(item => {
+                total += item.price * item.qty;
+                count += item.qty;
+                cartContainer.innerHTML += `
+                    <div class="cart-item">
+                        <div>
+                            <div style="font-weight: bold; font-size: 14px;">${item.name}</div>
+                            <div style="color: var(--text-muted); font-size: 12px;">${item.price.toLocaleString()} د.ع</div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span>x${item.qty}</span>
+                        </div>
+                    </div>
+                `;
+            });
+
+            document.getElementById('cartCount').innerText = count;
+            document.getElementById('cartTotal').innerText = total.toLocaleString() + ' د.ع';
+        }
+
+        function toggleCart() {
+            document.getElementById('cartSidebar').classList.toggle('open');
+        }
+
+        function checkout() {
+            if (cart.length === 0) {
+                alert('السلة فارغة!');
+                return;
+            }
+            alert('تم استلام طلبك بنجاح! سيصلك الطلب قريباً.');
+            cart = [];
+            updateCart();
+            toggleCart();
+        }
+
+        // إضافة مطعم جديد
+        function handleAddRestaurant(event) {
+            event.preventDefault();
+            const name = document.getElementById('newRestName').value;
+            const category = document.getElementById('newRestCat').value;
+            const image = document.getElementById('newRestImg').value;
+            const itemName = document.getElementById('newItemName').value;
+            const itemPrice = parseInt(document.getElementById('newItemPrice').value);
+
+            const newRest = {
+                id: Date.now(),
+                name,
+                category,
+                image,
+                rating: "5.0",
+                time: "25-35 دقيقة",
+                menu: [{ id: Date.now() + 1, name: itemName, price: itemPrice }]
+            };
+
+            restaurants.push(newRest);
+            renderRestaurants();
+            closeModal('addRestaurantModal');
+            document.getElementById('addRestForm').reset();
+            alert('تمت إضافة المطعم بنجاح!');
+        }
+
+        // التحكم بالعدسات/Modals
+        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+
+        // التشغيل الأول
+        renderRestaurants();
+    </script>
+</body>
+</html>
