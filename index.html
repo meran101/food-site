@@ -64,7 +64,7 @@
 
         .search-box {
             flex: 1;
-            max-width: 450px;
+            max-width: 350px;
             position: relative;
         }
 
@@ -90,14 +90,14 @@
         .nav-actions {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
         }
 
         .btn-action {
             background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
             color: white;
             border: none;
-            padding: 9px 16px;
+            padding: 8px 14px;
             border-radius: 20px;
             font-weight: 600;
             font-size: 13px;
@@ -133,6 +133,25 @@
             align-items: center;
             justify-content: center;
             font-weight: bold;
+        }
+
+        /* User Profile Pill in Nav */
+        .user-pill {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--bg-dark);
+            border: 1px solid var(--border-color);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+        }
+
+        .user-pill img {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            object-fit: cover;
         }
 
         /* Container & Categories */
@@ -194,6 +213,7 @@
             border: 1px solid var(--border-color);
             transition: 0.3s;
             cursor: pointer;
+            position: relative;
         }
 
         .restaurant-card:hover {
@@ -235,6 +255,19 @@
 
         .rating {
             color: #f59e0b;
+            font-weight: bold;
+        }
+
+        /* Owner badge on card */
+        .owner-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(34, 197, 94, 0.9);
+            color: white;
+            font-size: 11px;
+            padding: 4px 8px;
+            border-radius: 10px;
             font-weight: bold;
         }
 
@@ -284,10 +317,10 @@
             margin-bottom: 15px;
         }
 
-        /* Menu Items Grid with Images */
+        /* Menu Grid */
         .menu-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
             gap: 15px;
             margin-top: 15px;
         }
@@ -304,7 +337,7 @@
 
         .menu-item-img {
             width: 100%;
-            height: 120px;
+            height: 110px;
             object-fit: cover;
         }
 
@@ -323,6 +356,37 @@
             font-size: 14px;
             font-weight: bold;
             margin-bottom: 10px;
+        }
+
+        /* Social Login Buttons */
+        .social-btn {
+            width: 100%;
+            padding: 12px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            background-color: var(--bg-dark);
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 12px;
+            transition: 0.3s;
+        }
+
+        .social-btn:hover {
+            background-color: #334155;
+        }
+
+        .btn-google {
+            border-color: #db4437;
+        }
+
+        .btn-apple {
+            border-color: #fff;
         }
 
         /* Cart Sidebar */
@@ -393,9 +457,8 @@
                 <i class="fa-solid fa-magnifying-glass"></i>
                 <input type="text" id="searchInput" placeholder="ابحث عن مطعم أو وجبة..." onkeyup="filterRestaurants()">
             </div>
-            <div class="nav-actions">
-                <button class="btn-action" onclick="openModal('addRestaurantModal')"><i class="fa-solid fa-plus"></i> إضافة مطعم</button>
-                <button class="btn-action cart-btn" onclick="toggleCart()"><i class="fa-solid fa-cart-shopping"></i> <span class="cart-count" id="cartCount">0</span></button>
+            <div class="nav-actions" id="navAuthArea">
+                <!-- سيتم تعبئتها ديناميكياً عبر الجافاسكريبت حسب حالة تسجيل الدخول -->
             </div>
         </div>
     </nav>
@@ -417,25 +480,48 @@
         <div class="restaurants-grid" id="restaurantsContainer"></div>
     </div>
 
-    <!-- Modal: Restaurant Profile / Full Page View -->
+    <!-- Modal: Login Selection -->
+    <div class="modal" id="loginModal">
+        <div class="modal-content" style="max-width: 400px; text-align: center;">
+            <span class="close-btn" onclick="closeModal('loginModal')">&times;</span>
+            <h2 style="color: var(--primary-color); margin-bottom: 10px;">تسجيل الدخول</h2>
+            <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 25px;">اختر طريقة تسجيل الدخول لإدارة مطعمك وحفظ بياناتك</p>
+            
+            <button class="social-btn btn-google" onclick="loginWith('Google', 'https://cdn-icons-png.flaticon.com/512/2991/2991148.png')">
+                <i class="fa-brands fa-google" style="color: #db4437; font-size: 18px;"></i> متابعة باستخدام Google
+            </button>
+            
+            <button class="social-btn btn-apple" onclick="loginWith('Apple ID', 'https://cdn-icons-png.flaticon.com/512/0/747.png')">
+                <i class="fa-brands fa-apple" style="color: #fff; font-size: 18px;"></i> متابعة باستخدام Apple
+            </button>
+        </div>
+    </div>
+
+    <!-- Modal: Restaurant Profile & Full Menu -->
     <div class="modal" id="menuModal">
         <div class="modal-content">
             <span class="close-btn" onclick="closeModal('menuModal')">&times;</span>
             <img id="modalRestImg" class="modal-header-img" src="" alt="صورة المطعم">
-            <h2 id="modalRestName" style="color: var(--primary-color); margin-bottom: 5px;"></h2>
-            <p id="modalRestCat" style="color: var(--text-muted); font-size: 13px; margin-bottom: 20px;"></p>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <h2 id="modalRestName" style="color: var(--primary-color); margin-bottom: 5px;"></h2>
+                    <p id="modalRestCat" style="color: var(--text-muted); font-size: 13px; margin-bottom: 15px;"></p>
+                </div>
+                <div id="ownerActionsContainer"></div>
+            </div>
             
-            <h3 style="border-bottom: 1px solid var(--border-color); padding-bottom: 8px; margin-bottom: 15px;"><i class="fa-solid fa-utensils"></i> قائمة الطعام والوجبات</h3>
+            <h3 style="border-bottom: 1px solid var(--border-color); padding-bottom: 8px; margin-top: 15px; margin-bottom: 15px;"><i class="fa-solid fa-utensils"></i> قائمة الطعام</h3>
             <div class="menu-grid" id="menuContainer"></div>
         </div>
     </div>
 
-    <!-- Modal: Add Restaurant -->
+    <!-- Modal: Add / Edit Restaurant -->
     <div class="modal" id="addRestaurantModal">
         <div class="modal-content" style="max-width: 600px;">
             <span class="close-btn" onclick="closeModal('addRestaurantModal')">&times;</span>
-            <h2 style="color: var(--primary-color); margin-bottom: 15px;">إضافة مطعم جديد</h2>
-            <form id="addRestForm" onsubmit="handleAddRestaurant(event)">
+            <h2 id="modalFormTitle" style="color: var(--primary-color); margin-bottom: 15px;">إضافة مطعم جديد</h2>
+            <form id="addRestForm" onsubmit="handleSaveRestaurant(event)">
+                <input type="hidden" id="editRestId">
                 <div class="form-group">
                     <label>اسم المطعم</label>
                     <input type="text" id="newRestName" required placeholder="مثال: برغر هاوس">
@@ -454,7 +540,7 @@
                     <input type="url" id="newRestImg" required placeholder="https://example.com/image.jpg">
                 </div>
                 <div class="form-group">
-                    <label>اسم الوجبة الأولى</label>
+                    <label>اسم الوجبة</label>
                     <input type="text" id="newItemName" required placeholder="مثال: تشيز برغر">
                 </div>
                 <div class="form-group">
@@ -465,7 +551,7 @@
                     <label>سعر الوجبة (د.ع)</label>
                     <input type="number" id="newItemPrice" required placeholder="مثال: 7000">
                 </div>
-                <button type="submit" class="btn-action" style="width: 100%; justify-content: center; margin-top: 10px;">إضافة المطعم</button>
+                <button type="submit" class="btn-action" style="width: 100%; justify-content: center; margin-top: 10px;">حفظ المطعم</button>
             </form>
         </div>
     </div>
@@ -487,10 +573,11 @@
     </div>
 
     <script>
-        // البيانات الافتراضية للمطاعم (مع صور للوجبات)
+        // البيانات الافتراضية
         const defaultRestaurants = [
             {
                 id: 1,
+                ownerId: "system",
                 name: "برغر اكسبرس",
                 category: "fastfood",
                 image: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=500",
@@ -498,38 +585,70 @@
                 time: "20-30 دقيقة",
                 menu: [
                     { id: 101, name: "كلاسيك برغر", price: 6000, image: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=500" },
-                    { id: 102, name: "دبل تشيز برغر", price: 8500, image: "https://images.unsplash.com/photo-1586190848861-99aa4a171e90?w=500" },
-                    { id: 103, name: "بطاطا مقلية", price: 2500, image: "https://images.unsplash.com/photo-1573080496219-bb080dd4f877?w=500" }
+                    { id: 102, name: "دبل تشيز برغر", price: 8500, image: "https://images.unsplash.com/photo-1586190848861-99aa4a171e90?w=500" }
                 ]
             },
             {
                 id: 2,
+                ownerId: "system",
                 name: "بيتزا روما",
                 category: "pizza",
                 image: "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=500",
                 rating: "4.6",
                 time: "30-40 دقيقة",
                 menu: [
-                    { id: 201, name: "بيتزا مارغريتا", price: 9000, image: "https://images.unsplash.com/photo-1604382355076-af4b0eb60143?w=500" },
-                    { id: 202, name: "بيتزا بيبروني", price: 11000, image: "https://images.unsplash.com/photo-1628840042765-356cda07504e?w=500" }
-                ]
-            },
-            {
-                id: 3,
-                name: "مشاوي السفير",
-                category: "grill",
-                image: "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=500",
-                rating: "4.9",
-                time: "35-50 دقيقة",
-                menu: [
-                    { id: 301, name: "كباب لحم (كيلو)", price: 24000, image: "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=500" },
-                    { id: 302, name: "شيش طاووق", price: 12000, image: "https://images.unsplash.com/photo-1529193591184-b1d58069ecdd?w=500" }
+                    { id: 201, name: "بيتزا مارغريتا", price: 9000, image: "https://images.unsplash.com/photo-1604382355076-af4b0eb60143?w=500" }
                 ]
             }
         ];
 
         let restaurants = JSON.parse(localStorage.getItem('beshīqa_restaurants')) || defaultRestaurants;
+        let currentUser = JSON.parse(localStorage.getItem('beshīqa_user')) || null;
         let cart = [];
+        let currentActiveRestId = null;
+
+        // تحديث واجهة شريط التنقل (تسجيل الدخول / الملف الشخصي)
+        function updateAuthUI() {
+            const navAuthArea = document.getElementById('navAuthArea');
+            if (currentUser) {
+                navAuthArea.innerHTML = `
+                    <div class="user-pill">
+                        <img src="${currentUser.avatar}" alt="User">
+                        <span>${currentUser.name}</span>
+                    </div>
+                    <button class="btn-action" onclick="openAddModal()"><i class="fa-solid fa-plus"></i> إضافة مطعم</button>
+                    <button class="btn-action cart-btn" onclick="toggleCart()"><i class="fa-solid fa-cart-shopping"></i> <span class="cart-count" id="cartCount">0</span></button>
+                    <button class="btn-action" style="background: #334155;" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i></button>
+                `;
+            } else {
+                navAuthArea.innerHTML = `
+                    <button class="btn-action" onclick="openModal('loginModal')"><i class="fa-solid fa-user"></i> تسجيل الدخول</button>
+                    <button class="btn-action cart-btn" onclick="toggleCart()"><i class="fa-solid fa-cart-shopping"></i> <span class="cart-count" id="cartCount">0</span></button>
+                `;
+            }
+        }
+
+        // محاكاة تسجيل الدخول بـ Google أو Apple
+        function loginWith(provider, avatarUrl) {
+            currentUser = {
+                id: 'user_' + Date.now(),
+                name: provider === 'Google' ? 'مستخدم Google' : 'مستخدم Apple',
+                avatar: avatarUrl
+            };
+            localStorage.setItem('beshīqa_user', JSON.stringify(currentUser));
+            closeModal('loginModal');
+            updateAuthUI();
+            renderRestaurants();
+            alert('تم تسجيل الدخول بنجاح عبر ' + provider + '!');
+        }
+
+        function logout() {
+            currentUser = null;
+            localStorage.removeItem('beshīqa_user');
+            updateAuthUI();
+            renderRestaurants();
+            alert('تم تسجيل الخروج بنجاح.');
+        }
 
         // عرض المطاعم
         function renderRestaurants(data = restaurants) {
@@ -537,9 +656,11 @@
             container.innerHTML = '';
             
             data.forEach(rest => {
+                let isOwner = currentUser && rest.ownerId === currentUser.id;
                 container.innerHTML += `
                     <div class="restaurant-card" onclick="openMenu(${rest.id})">
                         <img src="${rest.image}" class="restaurant-img" alt="${rest.name}">
+                        ${isOwner ? '<span class="owner-badge"><i class="fa-solid fa-crown"></i> مطعمك</span>' : ''}
                         <div class="restaurant-info">
                             <div class="restaurant-name">${rest.name}</div>
                             <div class="restaurant-cat">${getCategoryName(rest.category)}</div>
@@ -562,28 +683,34 @@
         function filterCategory(category, btn) {
             document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
-
             if (category === 'all') {
                 renderRestaurants(restaurants);
             } else {
-                const filtered = restaurants.filter(r => r.category === category);
-                renderRestaurants(filtered);
+                renderRestaurants(restaurants.filter(r => r.category === category));
             }
         }
 
         function filterRestaurants() {
             const query = document.getElementById('searchInput').value.toLowerCase();
-            const filtered = restaurants.filter(r => r.name.toLowerCase().includes(query));
-            renderRestaurants(filtered);
+            renderRestaurants(restaurants.filter(r => r.name.toLowerCase().includes(query)));
         }
 
-        // فتح صفحة المطعم الكاملة مع وجباته وصورها
+        // فتح صفحة المطعم وقائمة الوجبات
         function openMenu(restId) {
+            currentActiveRestId = restId;
             const rest = restaurants.find(r => r.id === restId);
             document.getElementById('modalRestName').innerText = rest.name;
             document.getElementById('modalRestCat').innerText = getCategoryName(rest.category);
             document.getElementById('modalRestImg').src = rest.image;
             
+            // زر التعديل يظهر فقط إذا كان المستخدم هو صاحب المطعم المسجل
+            const ownerActions = document.getElementById('ownerActionsContainer');
+            if (currentUser && rest.ownerId === currentUser.id) {
+                ownerActions.innerHTML = `<button class="btn-action" onclick="openEditModal(${rest.id})"><i class="fa-solid fa-pen-to-square"></i> تعديل المطعم</button>`;
+            } else {
+                ownerActions.innerHTML = '';
+            }
+
             const menuContainer = document.getElementById('menuContainer');
             menuContainer.innerHTML = '';
             
@@ -601,6 +728,79 @@
             });
 
             openModal('menuModal');
+        }
+
+        // فتح نموذج إضافة مطعم
+        function openAddModal() {
+            if (!currentUser) {
+                openModal('loginModal');
+                return;
+            }
+            document.getElementById('modalFormTitle').innerText = 'إضافة مطعم جديد';
+            document.getElementById('editRestId').value = '';
+            document.getElementById('addRestForm').reset();
+            openModal('addRestaurantModal');
+        }
+
+        // فتح نموذج تعديل المطعم
+        function openEditModal(restId) {
+            closeModal('menuModal');
+            const rest = restaurants.find(r => r.id === restId);
+            document.getElementById('modalFormTitle').innerText = 'تعديل بيانات المطعم';
+            document.getElementById('editRestId').value = rest.id;
+            document.getElementById('newRestName').value = rest.name;
+            document.getElementById('newRestCat').value = rest.category;
+            document.getElementById('newRestImg').value = rest.image;
+            if (rest.menu.length > 0) {
+                document.getElementById('newItemName').value = rest.menu[0].name;
+                document.getElementById('newItemImg').value = rest.menu[0].image;
+                document.getElementById('newItemPrice').value = rest.menu[0].price;
+            }
+            openModal('addRestaurantModal');
+        }
+
+        // حفظ أو تعديل المطعم
+        function handleSaveRestaurant(event) {
+            event.preventDefault();
+            if (!currentUser) return;
+
+            const editId = document.getElementById('editRestId').value;
+            const name = document.getElementById('newRestName').value;
+            const category = document.getElementById('newRestCat').value;
+            const image = document.getElementById('newRestImg').value;
+            const itemName = document.getElementById('newItemName').value;
+            const itemImg = document.getElementById('newItemImg').value;
+            const itemPrice = parseInt(document.getElementById('newItemPrice').value);
+
+            if (editId) {
+                // تعديل مطعم موجود مسبقاً
+                let rest = restaurants.find(r => r.id == editId);
+                if (rest && rest.ownerId === currentUser.id) {
+                    rest.name = name;
+                    rest.category = category;
+                    rest.image = image;
+                    rest.menu = [{ id: Date.now(), name: itemName, price: itemPrice, image: itemImg }];
+                }
+            } else {
+                // إضافة مطعم جديد مرتبط بحساب المستخدم الحالي
+                const newRest = {
+                    id: Date.now(),
+                    ownerId: currentUser.id,
+                    name,
+                    category,
+                    image,
+                    rating: "5.0",
+                    time: "20-30 دقيقة",
+                    menu: [{ id: Date.now() + 1, name: itemName, price: itemPrice, image: itemImg }]
+                };
+                restaurants.push(newRest);
+            }
+
+            localStorage.setItem('beshīqa_restaurants', JSON.stringify(restaurants));
+            renderRestaurants();
+            closeModal('addRestaurantModal');
+            document.getElementById('addRestForm').reset();
+            alert('تم حفظ بيانات المطعم بنجاح!');
         }
 
         // إدارة السلة
@@ -629,9 +829,7 @@
                             <div style="font-weight: bold; font-size: 14px;">${item.name}</div>
                             <div style="color: var(--text-muted); font-size: 12px;">${item.price.toLocaleString()} د.ع</div>
                         </div>
-                        <div style="display: flex; align-items: center; gap: 8px;">
-                            <span>x${item.qty}</span>
-                        </div>
+                        <span>x${item.qty}</span>
                     </div>
                 `;
             });
@@ -655,40 +853,12 @@
             toggleCart();
         }
 
-        // إضافة مطعم جديد مع وجبة وصورتها
-        function handleAddRestaurant(event) {
-            event.preventDefault();
-            const name = document.getElementById('newRestName').value;
-            const category = document.getElementById('newRestCat').value;
-            const image = document.getElementById('newRestImg').value;
-            const itemName = document.getElementById('newItemName').value;
-            const itemImg = document.getElementById('newItemImg').value;
-            const itemPrice = parseInt(document.getElementById('newItemPrice').value);
-
-            const newRest = {
-                id: Date.now(),
-                name,
-                category,
-                image,
-                rating: "5.0",
-                time: "25-35 دقيقة",
-                menu: [{ id: Date.now() + 1, name: itemName, price: itemPrice, image: itemImg }]
-            };
-
-            restaurants.push(newRest);
-            localStorage.setItem('beshīqa_restaurants', JSON.stringify(restaurants));
-
-            renderRestaurants();
-            closeModal('addRestaurantModal');
-            document.getElementById('addRestForm').reset();
-            alert('تمت إضافة المطعم وحفظه بنجاح!');
-        }
-
-        // التحكم بالنوافذ المنبثقة
+        // النوافذ المنبثقة
         function openModal(id) { document.getElementById(id).style.display = 'flex'; }
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
         // التشغيل الأول
+        updateAuthUI();
         renderRestaurants();
     </script>
 </body>
