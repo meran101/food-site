@@ -246,7 +246,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.8);
+            background-color: rgba(0, 0, 0, 0.85);
             z-index: 1000;
             justify-content: center;
             align-items: center;
@@ -258,21 +258,71 @@
             background-color: var(--card-bg);
             border-radius: 20px;
             width: 100%;
-            max-width: 600px;
-            max-height: 85vh;
+            max-width: 750px;
+            max-height: 90vh;
             overflow-y: auto;
             border: 1px solid var(--border-color);
             position: relative;
-            padding: 25px;
+            padding: 30px;
         }
 
         .close-btn {
             position: absolute;
             top: 15px;
-            left: 15px;
-            font-size: 20px;
+            left: 20px;
+            font-size: 24px;
             color: var(--text-muted);
             cursor: pointer;
+            z-index: 10;
+        }
+
+        .modal-header-img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            border-radius: 12px;
+            margin-bottom: 15px;
+        }
+
+        /* Menu Items Grid with Images */
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .menu-item-card {
+            background-color: var(--bg-dark);
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .menu-item-img {
+            width: 100%;
+            height: 120px;
+            object-fit: cover;
+        }
+
+        .menu-item-details {
+            padding: 12px;
+        }
+
+        .menu-item-name {
+            font-weight: bold;
+            font-size: 15px;
+            margin-bottom: 5px;
+        }
+
+        .menu-item-price {
+            color: var(--primary-color);
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 10px;
         }
 
         /* Cart Sidebar */
@@ -331,23 +381,6 @@
             color: #fff;
             outline: none;
         }
-
-        .menu-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 15px;
-            margin-top: 15px;
-        }
-
-        .menu-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px;
-            background-color: var(--bg-dark);
-            border-radius: 12px;
-            border: 1px solid var(--border-color);
-        }
     </style>
 </head>
 <body>
@@ -384,20 +417,22 @@
         <div class="restaurants-grid" id="restaurantsContainer"></div>
     </div>
 
-    <!-- Modal: Menu -->
+    <!-- Modal: Restaurant Profile / Full Page View -->
     <div class="modal" id="menuModal">
         <div class="modal-content">
             <span class="close-btn" onclick="closeModal('menuModal')">&times;</span>
+            <img id="modalRestImg" class="modal-header-img" src="" alt="صورة المطعم">
             <h2 id="modalRestName" style="color: var(--primary-color); margin-bottom: 5px;"></h2>
-            <p id="modalRestCat" style="color: var(--text-muted); font-size: 13px; margin-bottom: 15px;"></p>
-            <h3>قائمة الطعام</h3>
+            <p id="modalRestCat" style="color: var(--text-muted); font-size: 13px; margin-bottom: 20px;"></p>
+            
+            <h3 style="border-bottom: 1px solid var(--border-color); padding-bottom: 8px; margin-bottom: 15px;"><i class="fa-solid fa-utensils"></i> قائمة الطعام والوجبات</h3>
             <div class="menu-grid" id="menuContainer"></div>
         </div>
     </div>
 
     <!-- Modal: Add Restaurant -->
     <div class="modal" id="addRestaurantModal">
-        <div class="modal-content">
+        <div class="modal-content" style="max-width: 600px;">
             <span class="close-btn" onclick="closeModal('addRestaurantModal')">&times;</span>
             <h2 style="color: var(--primary-color); margin-bottom: 15px;">إضافة مطعم جديد</h2>
             <form id="addRestForm" onsubmit="handleAddRestaurant(event)">
@@ -419,9 +454,16 @@
                     <input type="url" id="newRestImg" required placeholder="https://example.com/image.jpg">
                 </div>
                 <div class="form-group">
-                    <label>اسم الوجبة الأولى ورابط الصورة والسعر</label>
-                    <input type="text" id="newItemName" required placeholder="اسم الوجبة (مثال: تشيز برغر)">
-                    <input type="number" id="newItemPrice" required placeholder="السعر د.ع" style="margin-top: 5px;">
+                    <label>اسم الوجبة الأولى</label>
+                    <input type="text" id="newItemName" required placeholder="مثال: تشيز برغر">
+                </div>
+                <div class="form-group">
+                    <label>رابط صورة الوجبة</label>
+                    <input type="url" id="newItemImg" required placeholder="https://example.com/meal.jpg">
+                </div>
+                <div class="form-group">
+                    <label>سعر الوجبة (د.ع)</label>
+                    <input type="number" id="newItemPrice" required placeholder="مثال: 7000">
                 </div>
                 <button type="submit" class="btn-action" style="width: 100%; justify-content: center; margin-top: 10px;">إضافة المطعم</button>
             </form>
@@ -445,7 +487,7 @@
     </div>
 
     <script>
-        // البيانات الافتراضية للمطاعم
+        // البيانات الافتراضية للمطاعم (مع صور للوجبات)
         const defaultRestaurants = [
             {
                 id: 1,
@@ -455,9 +497,9 @@
                 rating: "4.8",
                 time: "20-30 دقيقة",
                 menu: [
-                    { id: 101, name: "كلاسيك برغر", price: 6000 },
-                    { id: 102, name: "دبل تشيز برغر", price: 8500 },
-                    { id: 103, name: "بطاطا مقلية", price: 2500 }
+                    { id: 101, name: "كلاسيك برغر", price: 6000, image: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=500" },
+                    { id: 102, name: "دبل تشيز برغر", price: 8500, image: "https://images.unsplash.com/photo-1586190848861-99aa4a171e90?w=500" },
+                    { id: 103, name: "بطاطا مقلية", price: 2500, image: "https://images.unsplash.com/photo-1573080496219-bb080dd4f877?w=500" }
                 ]
             },
             {
@@ -468,8 +510,8 @@
                 rating: "4.6",
                 time: "30-40 دقيقة",
                 menu: [
-                    { id: 201, name: "بيتزا مارغريتا", price: 9000 },
-                    { id: 202, name: "بيتزا بيبروني", price: 11000 }
+                    { id: 201, name: "بيتزا مارغريتا", price: 9000, image: "https://images.unsplash.com/photo-1604382355076-af4b0eb60143?w=500" },
+                    { id: 202, name: "بيتزا بيبروني", price: 11000, image: "https://images.unsplash.com/photo-1628840042765-356cda07504e?w=500" }
                 ]
             },
             {
@@ -480,15 +522,13 @@
                 rating: "4.9",
                 time: "35-50 دقيقة",
                 menu: [
-                    { id: 301, name: "كباب لحم (كيلو)", price: 24000 },
-                    { id: 302, name: "شيش طاووق", price: 12000 }
+                    { id: 301, name: "كباب لحم (كيلو)", price: 24000, image: "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=500" },
+                    { id: 302, name: "شيش طاووق", price: 12000, image: "https://images.unsplash.com/photo-1529193591184-b1d58069ecdd?w=500" }
                 ]
             }
         ];
 
-        // جلب المطاعم من ذاكرة المتصفح (localStorage) أو استخدام القائمة الافتراضية
         let restaurants = JSON.parse(localStorage.getItem('beshīqa_restaurants')) || defaultRestaurants;
-
         let cart = [];
 
         // عرض المطاعم
@@ -537,23 +577,25 @@
             renderRestaurants(filtered);
         }
 
-        // فتح قائمة طعام المطعم
+        // فتح صفحة المطعم الكاملة مع وجباته وصورها
         function openMenu(restId) {
             const rest = restaurants.find(r => r.id === restId);
             document.getElementById('modalRestName').innerText = rest.name;
             document.getElementById('modalRestCat').innerText = getCategoryName(rest.category);
+            document.getElementById('modalRestImg').src = rest.image;
             
             const menuContainer = document.getElementById('menuContainer');
             menuContainer.innerHTML = '';
             
             rest.menu.forEach(item => {
                 menuContainer.innerHTML += `
-                    <div class="menu-item">
-                        <div>
-                            <div style="font-weight: bold;">${item.name}</div>
-                            <div style="color: var(--primary-color); font-size: 14px;">${item.price.toLocaleString()} د.ع</div>
+                    <div class="menu-item-card">
+                        <img src="${item.image}" class="menu-item-img" alt="${item.name}">
+                        <div class="menu-item-details">
+                            <div class="menu-item-name">${item.name}</div>
+                            <div class="menu-item-price">${item.price.toLocaleString()} د.ع</div>
+                            <button class="btn-action" style="width: 100%; justify-content: center;" onclick="addToCart('${item.name}', ${item.price})"><i class="fa-solid fa-plus"></i> إضافة للسلة</button>
                         </div>
-                        <button class="btn-action" onclick="addToCart('${item.name}', ${item.price})"><i class="fa-solid fa-plus"></i> إضافة</button>
                     </div>
                 `;
             });
@@ -561,7 +603,7 @@
             openModal('menuModal');
         }
 
-        // إدار السلة
+        // إدارة السلة
         function addToCart(name, price) {
             const existing = cart.find(item => item.name === name);
             if (existing) {
@@ -613,13 +655,14 @@
             toggleCart();
         }
 
-        // إضافة مطعم جديد مع حفظه نهائياً في المتصفح
+        // إضافة مطعم جديد مع وجبة وصورتها
         function handleAddRestaurant(event) {
             event.preventDefault();
             const name = document.getElementById('newRestName').value;
             const category = document.getElementById('newRestCat').value;
             const image = document.getElementById('newRestImg').value;
             const itemName = document.getElementById('newItemName').value;
+            const itemImg = document.getElementById('newItemImg').value;
             const itemPrice = parseInt(document.getElementById('newItemPrice').value);
 
             const newRest = {
@@ -629,12 +672,10 @@
                 image,
                 rating: "5.0",
                 time: "25-35 دقيقة",
-                menu: [{ id: Date.now() + 1, name: itemName, price: itemPrice }]
+                menu: [{ id: Date.now() + 1, name: itemName, price: itemPrice, image: itemImg }]
             };
 
             restaurants.push(newRest);
-            
-            // حفظ التحديثات مباشرة في الذاكرة الدائمة للمتصفح
             localStorage.setItem('beshīqa_restaurants', JSON.stringify(restaurants));
 
             renderRestaurants();
@@ -643,7 +684,7 @@
             alert('تمت إضافة المطعم وحفظه بنجاح!');
         }
 
-        // التحكم بالعدسات/Modals
+        // التحكم بالنوافذ المنبثقة
         function openModal(id) { document.getElementById(id).style.display = 'flex'; }
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
