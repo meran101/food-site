@@ -445,8 +445,8 @@
     </div>
 
     <script>
-        // البيانات الأولية للمطاعم
-        let restaurants = [
+        // البيانات الافتراضية للمطاعم
+        const defaultRestaurants = [
             {
                 id: 1,
                 name: "برغر اكسبرس",
@@ -485,6 +485,9 @@
                 ]
             }
         ];
+
+        // جلب المطاعم من ذاكرة المتصفح (localStorage) أو استخدام القائمة الافتراضية
+        let restaurants = JSON.parse(localStorage.getItem('beshīqa_restaurants')) || defaultRestaurants;
 
         let cart = [];
 
@@ -610,7 +613,7 @@
             toggleCart();
         }
 
-        // إضافة مطعم جديد
+        // إضافة مطعم جديد مع حفظه نهائياً في المتصفح
         function handleAddRestaurant(event) {
             event.preventDefault();
             const name = document.getElementById('newRestName').value;
@@ -630,10 +633,14 @@
             };
 
             restaurants.push(newRest);
+            
+            // حفظ التحديثات مباشرة في الذاكرة الدائمة للمتصفح
+            localStorage.setItem('beshīqa_restaurants', JSON.stringify(restaurants));
+
             renderRestaurants();
             closeModal('addRestaurantModal');
             document.getElementById('addRestForm').reset();
-            alert('تمت إضافة المطعم بنجاح!');
+            alert('تمت إضافة المطعم وحفظه بنجاح!');
         }
 
         // التحكم بالعدسات/Modals
