@@ -6,11 +6,6 @@
     <title>مطاعم بعشيقة | منصة طلب الطعام</title>
     <!-- FontAwesome للأيقونات -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    
-    <!-- مكتبات Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
-
     <style>
         :root {
             --primary-color: #ff5a00;
@@ -121,17 +116,6 @@
             transition: 0.2s;
         }
 
-        .btn-google {
-            background: #fff;
-            color: #0f172a;
-            border: 1px solid var(--border-color);
-            width: 100%;
-            justify-content: center;
-            margin-bottom: 12px;
-            font-weight: bold;
-        }
-        .btn-google:hover { background: #f1f5f9; }
-
         .user-pill {
             display: flex;
             align-items: center;
@@ -208,7 +192,7 @@
 
         .section-title { font-size: 17px; font-weight: 700; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
 
-        /* شبكة المطاعم العامة */
+        /* شبكة المطاعم */
         .restaurants-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 15px; }
         .restaurant-card { background-color: var(--card-bg); border-radius: 14px; overflow: hidden; border: 1px solid var(--border-color); cursor: pointer; position: relative; transition: 0.2s; }
         .restaurant-card:hover { transform: translateY(-3px); border-color: var(--primary-color); }
@@ -348,13 +332,6 @@
             <span class="close-btn" onclick="closeModal('authModal')">&times;</span>
             <h2 id="authModalTitle" style="color: var(--primary-color); margin-bottom: 10px; text-align: center;">تسجيل الدخول</h2>
             
-            <!-- زر الدخول الحقيقي عبر Google -->
-            <button class="btn-action btn-google" onclick="loginWithGoogle()">
-                <i class="fa-brands fa-google" style="color: #db4437; font-size: 16px;"></i> متابعة باستخدام حساب Google
-            </button>
-
-            <div style="text-align: center; color: var(--text-muted); font-size: 12px; margin: 12px 0;">أو عبر البريد الإلكتروني</div>
-
             <form id="authForm" onsubmit="handleAuthSubmit(event)">
                 <div class="form-group" id="nameFieldGroup" style="display: none;">
                     <label>الاسم الكامل</label>
@@ -419,7 +396,7 @@
     <div class="modal" id="addRestaurantModal">
         <div class="modal-content">
             <span class="close-btn" onclick="closeModal('addRestaurantModal')">&times;</span>
-            <h2 style="color: var(--primary-color); margin-bottom: 12px;">إضافة مطعم جديد (سينشر للعامة)</h2>
+            <h2 style="color: var(--primary-color); margin-bottom: 12px;">إضافة مطعم جديد (سينشر محلياً للعامة)</h2>
             <form id="addRestForm" onsubmit="handleSaveRestaurant(event)">
                 <input type="hidden" id="editRestId">
                 <div class="form-group">
@@ -451,7 +428,7 @@
                     <label>سعر الوجبة (د.ع)</label>
                     <input type="number" id="newItemPrice" required placeholder="7000">
                 </div>
-                <button type="submit" class="btn-action" style="width: 100%; justify-content: center; margin-top: 8px;">نشر المطعم للعامة</button>
+                <button type="submit" class="btn-action" style="width: 100%; justify-content: center; margin-top: 8px;">نشر المطعم</button>
             </form>
         </div>
     </div>
@@ -473,42 +450,6 @@
     </div>
 
     <script>
-        // 🔹 إعدادات Firebase الخاصة بك
-        const firebaseConfig = {
-            apiKey: "AIzaSyDCB6B5j5p55FXP3tXMsnIXsM2Z88DQZF8",
-            authDomain: "restaurants-in-bashiqa.firebaseapp.com",
-            projectId: "restaurants-in-bashiqa",
-            storageBucket: "restaurants-in-bashiqa.firebasestorage.app",
-            messagingSenderId: "233009565164",
-            appId: "1:233009565164:web:98bbf7bb11868f11ff04c9",
-            measurementId: "G-4QV0WL38GG"
-        };
-        firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-        const googleProvider = new firebase.auth.GoogleAuthProvider();
-
-        // دالة تسجيل الدخول عبر Google الحقيقي
-        function loginWithGoogle() {
-            auth.signInWithPopup(googleProvider)
-                .then((result) => {
-                    const user = result.user;
-                    currentUser = {
-                        id: user.uid,
-                        name: user.displayName,
-                        email: user.email,
-                        avatar: user.photoURL || 'https://cdn-icons-png.flaticon.com/512/149/149071.png'
-                    };
-                    localStorage.setItem('beshīqa_user', JSON.stringify(currentUser));
-                    closeModal('authModal');
-                    updateAuthUI();
-                    renderRestaurants();
-                    alert('مرحباً بك، ' + currentUser.name);
-                })
-                .catch((error) => {
-                    alert('فشل تسجيل الدخول عبر جوجل: ' + error.message);
-                });
-        }
-
         const defaultRestaurants = [
             {
                 id: 1, ownerId: "system", name: "برغر اكسبرس", category: "fastfood",
@@ -733,7 +674,7 @@
             renderRestaurants();
             closeModal('addRestaurantModal');
             tempRestImgBase64 = ""; tempMealImgBase64 = "";
-            alert('تم نشر المطعم بنجاح للعامة!');
+            alert('تم نشر المطعم بنجاح!');
         }
 
         function renderRestaurants(data = restaurants) {
