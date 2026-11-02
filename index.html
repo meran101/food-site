@@ -34,6 +34,17 @@
             padding-bottom: calc(var(--bottom-nav-height) + 20px);
         }
 
+        /* الصفحات والشاشات الرئيسية */
+        .page-view {
+            display: none;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 15px 12px;
+        }
+        .page-view.active {
+            display: block;
+        }
+
         /* Navbar العلوي */
         .navbar {
             background-color: rgba(30, 41, 59, 0.95);
@@ -49,7 +60,6 @@
             max-width: 1200px;
             margin: 0 auto;
             display: flex;
-            flex-wrap: wrap;
             justify-content: space-between;
             align-items: center;
             gap: 10px;
@@ -63,11 +73,12 @@
             align-items: center;
             gap: 8px;
             text-decoration: none;
+            cursor: pointer;
         }
 
         .search-box {
             flex: 1;
-            min-width: 200px;
+            max-width: 350px;
             position: relative;
         }
 
@@ -142,13 +153,13 @@
         }
 
         .user-pill img {
-            width: 22px;
-            height: 22px;
+            width: 24px;
+            height: 24px;
             border-radius: 50%;
             object-fit: cover;
         }
 
-        /* Bottom Navigation للهاتف فقط */
+        /* Bottom Navigation */
         .bottom-nav {
             display: none;
             position: fixed;
@@ -181,13 +192,8 @@
             height: 100%;
         }
 
-        .bottom-nav-item i {
-            font-size: 18px;
-        }
-
-        .bottom-nav-item.active, .bottom-nav-item:active {
-            color: var(--primary-color);
-        }
+        .bottom-nav-item i { font-size: 18px; }
+        .bottom-nav-item.active { color: var(--primary-color); }
 
         .bottom-nav-item .cart-badge-bottom {
             position: absolute;
@@ -205,25 +211,16 @@
             font-weight: bold;
         }
 
-        /* Main Container */
-        .main-container {
-            max-width: 1200px;
-            margin: 15px auto;
-            padding: 0 12px;
-        }
-
-        /* التصنيفات بالتمرير الأفقي السلس للمس */
+        /* التصنيفات بالتمرير الأفقي */
         .categories {
             display: flex;
             gap: 10px;
             overflow-x: auto;
             padding-bottom: 8px;
             margin-bottom: 20px;
-            scrollbar-width: none; /* Firefox */
+            scrollbar-width: none;
         }
-        .categories::-webkit-scrollbar {
-            display: none; /* Chrome/Safari */
-        }
+        .categories::-webkit-scrollbar { display: none; }
 
         .category-btn {
             background-color: var(--card-bg);
@@ -269,6 +266,12 @@
             border: 1px solid var(--border-color);
             cursor: pointer;
             position: relative;
+            transition: 0.2s;
+        }
+
+        .restaurant-card:hover {
+            transform: translateY(-3px);
+            border-color: var(--primary-color);
         }
 
         .restaurant-img {
@@ -277,22 +280,9 @@
             object-fit: cover;
         }
 
-        .restaurant-info {
-            padding: 12px;
-        }
-
-        .restaurant-name {
-            font-size: 16px;
-            font-weight: 700;
-            margin-bottom: 4px;
-        }
-
-        .restaurant-cat {
-            color: var(--text-muted);
-            font-size: 12px;
-            margin-bottom: 10px;
-        }
-
+        .restaurant-info { padding: 12px; }
+        .restaurant-name { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
+        .restaurant-cat { color: var(--text-muted); font-size: 12px; margin-bottom: 10px; }
         .restaurant-meta {
             display: flex;
             justify-content: space-between;
@@ -302,10 +292,7 @@
             padding-top: 8px;
         }
 
-        .rating {
-            color: #f59e0b;
-            font-weight: bold;
-        }
+        .rating { color: #f59e0b; font-weight: bold; }
 
         .owner-badge {
             position: absolute;
@@ -319,7 +306,119 @@
             font-weight: bold;
         }
 
-        /* النوافذ المنبثقة (Modals) للهاتف */
+        /* صفحة الحساب الشخصي (Profile View) */
+        .profile-container {
+            background-color: var(--card-bg);
+            border-radius: 16px;
+            padding: 20px;
+            border: 1px solid var(--border-color);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .profile-header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .profile-avatar-wrapper {
+            position: relative;
+            width: 100px;
+            height: 100px;
+        }
+
+        .profile-avatar-img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--primary-color);
+        }
+
+        .avatar-upload-btn {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+        }
+
+        /* صفحة المطعم المستقلة (Full Restaurant Page) */
+        .restaurant-page-banner {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+            border-radius: 16px;
+            margin-bottom: 15px;
+        }
+
+        .restaurant-page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+            background-color: var(--card-bg);
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+        }
+
+        .back-btn {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 15px;
+            font-size: 13px;
+        }
+
+        /* Menu Grid */
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 12px;
+            margin-top: 15px;
+        }
+
+        .menu-item-card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .menu-item-img {
+            width: 100%;
+            height: 110px;
+            object-fit: cover;
+        }
+
+        .menu-item-details { padding: 10px; }
+        .menu-item-name { font-weight: bold; font-size: 14px; margin-bottom: 4px; }
+        .menu-item-price { color: var(--primary-color); font-size: 13px; font-weight: bold; margin-bottom: 8px; }
+
+        /* Modals */
         .modal {
             display: none;
             position: fixed;
@@ -330,27 +429,21 @@
             background-color: rgba(0, 0, 0, 0.85);
             z-index: 1000;
             justify-content: center;
-            align-items: flex-end; /* تفتح من الأسفل بالهواتف */
+            align-items: center;
+            padding: 15px;
             backdrop-filter: blur(4px);
         }
 
         .modal-content {
             background-color: var(--card-bg);
-            border-radius: 20px 20px 0 0;
+            border-radius: 16px;
             width: 100%;
-            max-width: 650px;
-            max-height: 85vh;
+            max-width: 450px;
+            max-height: 90vh;
             overflow-y: auto;
             border: 1px solid var(--border-color);
-            border-bottom: none;
             position: relative;
-            padding: 20px 18px;
-            animation: slideUp 0.25s ease-out;
-        }
-
-        @keyframes slideUp {
-            from { transform: translateY(100%); }
-            to { transform: translateY(0); }
+            padding: 22px;
         }
 
         .close-btn {
@@ -360,73 +453,13 @@
             font-size: 22px;
             color: var(--text-muted);
             cursor: pointer;
-            z-index: 10;
         }
 
-        .modal-header-img {
-            width: 100%;
-            height: 150px;
-            object-fit: cover;
-            border-radius: 10px;
-            margin-bottom: 12px;
-        }
-
-        /* قائمة الطعام بالمنفذ */
-        .menu-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-            gap: 12px;
-            margin-top: 12px;
-        }
-
-        .menu-item-card {
-            background-color: var(--bg-dark);
-            border-radius: 10px;
-            border: 1px solid var(--border-color);
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-
-        .menu-item-img {
-            width: 100%;
-            height: 95px;
-            object-fit: cover;
-        }
-
-        .menu-item-details {
-            padding: 8px;
-        }
-
-        .menu-item-name {
-            font-weight: bold;
-            font-size: 13px;
-            margin-bottom: 4px;
-        }
-
-        .menu-item-price {
-            color: var(--primary-color);
-            font-size: 13px;
-            font-weight: bold;
-            margin-bottom: 8px;
-        }
-
-        /* النماذج */
-        .form-group {
-            margin-bottom: 12px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 4px;
-            font-size: 12px;
-            color: var(--text-muted);
-        }
-
+        .form-group { margin-bottom: 12px; }
+        .form-group label { display: block; margin-bottom: 4px; font-size: 12px; color: var(--text-muted); }
         .form-group input, .form-group select {
             width: 100%;
-            padding: 9px;
+            padding: 10px;
             border-radius: 8px;
             border: 1px solid var(--border-color);
             background-color: var(--bg-dark);
@@ -448,7 +481,16 @@
             font-weight: bold;
         }
 
-        /* قائمة السلة الجانبية/السفلية */
+        .forgot-link {
+            display: block;
+            text-align: left;
+            font-size: 12px;
+            color: var(--primary-color);
+            cursor: pointer;
+            margin-top: 4px;
+        }
+
+        /* Cart Sidebar */
         .cart-sidebar {
             position: fixed;
             top: 0;
@@ -465,17 +507,8 @@
             padding: 15px;
             border-right: 1px solid var(--border-color);
         }
-
-        .cart-sidebar.open {
-            left: 0;
-        }
-
-        .cart-items {
-            flex: 1;
-            overflow-y: auto;
-            margin: 12px 0;
-        }
-
+        .cart-sidebar.open { left: 0; }
+        .cart-items { flex: 1; overflow-y: auto; margin: 12px 0; }
         .cart-item {
             display: flex;
             justify-content: space-between;
@@ -484,41 +517,13 @@
             border-bottom: 1px solid var(--border-color);
         }
 
-        /* الاستجابة للشاشات الكبيرة والشاشات الصغيرة (Media Queries) */
         @media (max-width: 768px) {
-            .nav-actions-desktop {
-                display: none; /* إخفاء أزرار الهيدر والاعتماد على Bottom Nav في الهاتف */
-            }
-
-            .bottom-nav {
-                display: flex; /* إظهار شريط التنقل السفلي للهاتف */
-            }
-
-            .restaurants-grid {
-                grid-template-columns: repeat(auto-fill, minmax(100%, 1fr));
-            }
-
-            .modal {
-                align-items: flex-end;
-            }
-
-            .modal-content {
-                border-radius: 18px 18px 0 0;
-                padding-bottom: calc(var(--bottom-nav-height) + 15px);
-            }
-
-            .cart-sidebar {
-                max-width: 100%; /* السلة تملأ الشاشة في الهواتف */
-            }
-        }
-
-        @media (min-width: 769px) {
-            .modal {
-                align-items: center;
-            }
-            .modal-content {
-                border-radius: 16px;
-            }
+            .nav-actions-desktop { display: none; }
+            .bottom-nav { display: flex; }
+            .restaurants-grid { grid-template-columns: 1fr; }
+            .modal { align-items: flex-end; }
+            .modal-content { border-radius: 18px 18px 0 0; }
+            .cart-sidebar { max-width: 100%; }
         }
     </style>
 </head>
@@ -527,19 +532,18 @@
     <!-- Navbar العلوي -->
     <nav class="navbar">
         <div class="nav-container">
-            <a href="#" class="logo"><i class="fa-solid fa-utensils"></i> مطاعم بعشيقة</a>
+            <div class="logo" onclick="switchPage('homePage')"><i class="fa-solid fa-utensils"></i> مطاعم بعشيقة</div>
             <div class="search-box">
                 <i class="fa-solid fa-magnifying-glass"></i>
                 <input type="text" id="searchInput" placeholder="ابحث عن مطعم أو وجبة..." onkeyup="filterRestaurants()">
             </div>
-            <!-- الأزرار للشاشات الكبيرة -->
             <div class="nav-actions-desktop" id="navAuthArea"></div>
         </div>
     </nav>
 
-    <!-- Main Content -->
-    <div class="main-container">
-        <!-- التصنيفات بتمرير أفقي -->
+    <!-- الصفحة الرئيسية (Home Page) -->
+    <div class="page-view active" id="homePage">
+        <!-- التصنيفات -->
         <div class="categories">
             <button class="category-btn active" onclick="filterCategory('all', this)"><i class="fa-solid fa-border-all"></i> الكل</button>
             <button class="category-btn" onclick="filterCategory('fastfood', this)"><i class="fa-solid fa-burger"></i> وجبات سريعة</button>
@@ -548,15 +552,58 @@
             <button class="category-btn" onclick="filterCategory('sweets', this)"><i class="fa-solid fa-ice-cream"></i> حلويات</button>
         </div>
 
-        <h2 class="section-title"><i class="fa-solid fa-store" style="color: var(--primary-color);"></i> المطاعم المتاحة</h2>
-        
-        <!-- قائمة المطاعم -->
+        <h2 class="section-title"><i class="fa-solid fa-store" style="color: var(--primary-color);"></i> المطاعم العامة المتاحة</h2>
         <div class="restaurants-grid" id="restaurantsContainer"></div>
     </div>
 
-    <!-- شريط التنقل السفلي السريع للهاتف (Bottom Navigation Bar) -->
+    <!-- صفحة المطعم الفردية الكاملة (Single Restaurant Page) -->
+    <div class="page-view" id="restaurantDetailPage">
+        <button class="back-btn" onclick="switchPage('homePage')"><i class="fa-solid fa-arrow-right"></i> العودة للرئيسية</button>
+        <img id="restPageBanner" class="restaurant-page-banner" src="" alt="غلاف المطعم">
+        
+        <div class="restaurant-page-header">
+            <div>
+                <h1 id="restPageTitle" style="color: var(--primary-color); font-size: 22px; margin-bottom: 5px;"></h1>
+                <p id="restPageCat" style="color: var(--text-muted); font-size: 13px;"></p>
+            </div>
+            <div id="restPageOwnerActions"></div>
+        </div>
+
+        <h3 class="section-title"><i class="fa-solid fa-utensils"></i> قائمة الوجبات والأطباق</h3>
+        <div class="menu-grid" id="restPageMenuContainer"></div>
+    </div>
+
+    <!-- صفحة "حسابي" المخصصة (Profile Page View) -->
+    <div class="page-view" id="profilePage">
+        <button class="back-btn" onclick="switchPage('homePage')"><i class="fa-solid fa-arrow-right"></i> العودة للرئيسية</button>
+        
+        <div class="profile-container">
+            <div class="profile-header">
+                <div class="profile-avatar-wrapper">
+                    <img id="profilePageAvatar" class="profile-avatar-img" src="" alt="الملف الشخصي">
+                    <button class="avatar-upload-btn" onclick="triggerAvatarUpload()" title="تغيير الصورة من المعرض">
+                        <i class="fa-solid fa-camera"></i>
+                    </button>
+                    <input type="file" id="avatarFileInput" accept="image/*" style="display: none;" onchange="handleImageUpload(event)">
+                </div>
+                <h2 id="profilePageName" style="color: var(--primary-color);"></h2>
+                <p id="profilePageEmail" style="color: var(--text-muted); font-size: 13px;"></p>
+            </div>
+
+            <form onsubmit="handleSaveProfilePage(event)">
+                <div class="form-group">
+                    <label>الاسم الكامل</label>
+                    <input type="text" id="profileInputName" required>
+                </div>
+                <button type="submit" class="btn-action" style="width: 100%; justify-content: center; margin-top: 10px;">حفظ التغييرات</button>
+                <button type="button" class="btn-action" style="width: 100%; justify-content: center; margin-top: 10px; background: #334155;" onclick="logout()">تسجيل الخروج</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Bottom Navigation للهاتف -->
     <div class="bottom-nav">
-        <button class="bottom-nav-item active" onclick="scrollToTop()">
+        <button class="bottom-nav-item active" id="btnNavHome" onclick="switchPage('homePage')">
             <i class="fa-solid fa-house"></i>
             <span>الرئيسية</span>
         </button>
@@ -569,13 +616,13 @@
             <span class="cart-badge-bottom" id="cartCountBottom">0</span>
             <span>السلة</span>
         </button>
-        <button class="bottom-nav-item" id="bottomNavUserBtn" onclick="handleBottomUserClick()">
+        <button class="bottom-nav-item" id="btnNavUser" onclick="handleBottomUserClick()">
             <i class="fa-solid fa-user"></i>
             <span id="bottomNavUserText">حسابي</span>
         </button>
     </div>
 
-    <!-- Modal: Auth (Login / Register) -->
+    <!-- Modal: Auth (تسجيل الدخول / إنشاء حساب) -->
     <div class="modal" id="authModal">
         <div class="modal-content">
             <span class="close-btn" onclick="closeModal('authModal')">&times;</span>
@@ -594,6 +641,7 @@
                 <div class="form-group">
                     <label>كلمة المرور</label>
                     <input type="password" id="authPassword" required placeholder="••••••••">
+                    <span class="forgot-link" id="forgotPassLink" onclick="openForgotModal()">هل نسيت كلمة السر؟</span>
                 </div>
                 <button type="submit" class="btn-action" id="authSubmitBtn" style="width: 100%; justify-content: center; margin-top: 8px;">دخول</button>
             </form>
@@ -604,49 +652,42 @@
         </div>
     </div>
 
-    <!-- Modal: Edit Profile -->
-    <div class="modal" id="profileModal">
+    <!-- Modal: هل نسيت كلمة السر؟ (إعادة التعيين عبر كود التحقق) -->
+    <div class="modal" id="forgotModal">
         <div class="modal-content">
-            <span class="close-btn" onclick="closeModal('profileModal')">&times;</span>
-            <h2 style="color: var(--primary-color); margin-bottom: 12px;">تعديل الملف الشخصي</h2>
-            <form onsubmit="handleSaveProfile(event)">
+            <span class="close-btn" onclick="closeModal('forgotModal')">&times;</span>
+            <h2 style="color: var(--primary-color); margin-bottom: 4px; text-align: center;">إعادة تعيين كلمة السر</h2>
+            <p style="color: var(--text-muted); font-size: 12px; margin-bottom: 16px; text-align: center;">أدخل بريدك المسجل لإرسال رمز التحقق</p>
+            
+            <!-- الخطوة 1: البريد -->
+            <form id="forgotStep1" onsubmit="handleSendResetCode(event)">
                 <div class="form-group">
-                    <label>الاسم الظاهر</label>
-                    <input type="text" id="editProfileName" required>
+                    <label>البريد الإلكتروني</label>
+                    <input type="email" id="resetEmailInput" required placeholder="name@gmail.com">
+                </div>
+                <button type="submit" class="btn-action" style="width: 100%; justify-content: center;">إرسال رمز التحقق</button>
+            </form>
+
+            <!-- الخطوة 2: إدخال الرمز وكلمة المرور الجديدة -->
+            <form id="forgotStep2" style="display: none;" onsubmit="handleVerifyAndReset(event)">
+                <div class="form-group">
+                    <label>رمز التحقق (تم إرساله للبريد)</label>
+                    <input type="text" id="resetCodeInput" required placeholder="مثال: 123456" maxlength="6">
                 </div>
                 <div class="form-group">
-                    <label>رابط الصورة الشخصية</label>
-                    <input type="url" id="editProfileAvatar" required placeholder="https://example.com/avatar.jpg">
+                    <label>كلمة المرور الجديدة</label>
+                    <input type="password" id="newResetPassword" required placeholder="••••••••">
                 </div>
-                <button type="submit" class="btn-action" style="width: 100%; justify-content: center; margin-top: 8px;">حفظ التغييرات</button>
-                <button type="button" class="btn-action" style="width: 100%; justify-content: center; margin-top: 8px; background: #334155;" onclick="logout()">تسجيل الخروج</button>
+                <button type="submit" class="btn-action" style="width: 100%; justify-content: center;">تأكيد وتغيير كلمة المرور</button>
             </form>
         </div>
     </div>
 
-    <!-- Modal: Menu -->
-    <div class="modal" id="menuModal">
-        <div class="modal-content">
-            <span class="close-btn" onclick="closeModal('menuModal')">&times;</span>
-            <img id="modalRestImg" class="modal-header-img" src="" alt="مطعم">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                <div>
-                    <h2 id="modalRestName" style="color: var(--primary-color); font-size: 18px;"></h2>
-                    <p id="modalRestCat" style="color: var(--text-muted); font-size: 12px;"></p>
-                </div>
-                <div id="ownerActionsContainer"></div>
-            </div>
-            
-            <h3 style="border-bottom: 1px solid var(--border-color); padding-bottom: 6px; font-size: 14px;"><i class="fa-solid fa-utensils"></i> قائمة الطعام</h3>
-            <div class="menu-grid" id="menuContainer"></div>
-        </div>
-    </div>
-
-    <!-- Modal: Add / Edit Restaurant -->
+    <!-- Modal: إضافة/تعديل مطعم -->
     <div class="modal" id="addRestaurantModal">
         <div class="modal-content">
             <span class="close-btn" onclick="closeModal('addRestaurantModal')">&times;</span>
-            <h2 id="modalFormTitle" style="color: var(--primary-color); margin-bottom: 12px;">إضافة مطعم جديد</h2>
+            <h2 id="modalFormTitle" style="color: var(--primary-color); margin-bottom: 12px;">إضافة مطعم جديد (سينشر للعامة)</h2>
             <form id="addRestForm" onsubmit="handleSaveRestaurant(event)">
                 <input type="hidden" id="editRestId">
                 <div class="form-group">
@@ -663,22 +704,24 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label>رابط صورة المطعم</label>
-                    <input type="url" id="newRestImg" required placeholder="https://example.com/image.jpg">
+                    <label>صورة غلاف المطعم</label>
+                    <input type="file" id="newRestImgFile" accept="image/*" onchange="handleRestImageFile(event)">
+                    <input type="hidden" id="newRestImgBase64">
                 </div>
                 <div class="form-group">
-                    <label>اسم الوجبة</label>
+                    <label>اسم الوجبة الأولى</label>
                     <input type="text" id="newItemName" required placeholder="مثال: تشيز برغر">
                 </div>
                 <div class="form-group">
-                    <label>رابط صورة الوجبة</label>
-                    <input type="url" id="newItemImg" required placeholder="https://example.com/meal.jpg">
+                    <label>صورة الوجبة</label>
+                    <input type="file" id="newItemImgFile" accept="image/*" onchange="handleMealImageFile(event)">
+                    <input type="hidden" id="newItemImgBase64">
                 </div>
                 <div class="form-group">
                     <label>سعر الوجبة (د.ع)</label>
                     <input type="number" id="newItemPrice" required placeholder="7000">
                 </div>
-                <button type="submit" class="btn-action" style="width: 100%; justify-content: center; margin-top: 8px;">حفظ المطعم</button>
+                <button type="submit" class="btn-action" style="width: 100%; justify-content: center; margin-top: 8px;">نشر المطعم للعامة</button>
             </form>
         </div>
     </div>
@@ -732,7 +775,22 @@
         let usersDB = JSON.parse(localStorage.getItem('beshīqa_users')) || [];
         let currentUser = JSON.parse(localStorage.getItem('beshīqa_user')) || null;
         let cart = [];
-        let isRegisterMode = false;
+        let generatedResetCode = null;
+        let resetUserEmail = null;
+        let tempRestImgBase64 = "";
+        let tempMealImgBase64 = "";
+
+        // التنقل بين الصفحات Full Page Switching
+        function switchPage(pageId) {
+            document.querySelectorAll('.page-view').forEach(p => p.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            // تحديث حالة الأزرار في شريط السفلي
+            document.querySelectorAll('.bottom-nav-item').forEach(b => b.classList.remove('active'));
+            if (pageId === 'homePage') document.getElementById('btnNavHome').classList.add('active');
+            if (pageId === 'profilePage') document.getElementById('btnNavUser').classList.add('active');
+        }
 
         function updateAuthUI() {
             const navAuthArea = document.getElementById('navAuthArea');
@@ -741,11 +799,11 @@
             if (currentUser) {
                 if (navAuthArea) {
                     navAuthArea.innerHTML = `
-                        <div class="user-pill" onclick="openProfileModal()">
+                        <div class="user-pill" onclick="openMyProfilePage()">
                             <img src="${currentUser.avatar || 'https://cdn-icons-png.flaticon.com/512/149/149071.png'}">
                             <span>${currentUser.name}</span>
                         </div>
-                        <button class="btn-action" onclick="openAddModal()"><i class="fa-solid fa-plus"></i> إضافة</button>
+                        <button class="btn-action" onclick="openAddModal()"><i class="fa-solid fa-plus"></i> إضافة مطعم</button>
                         <button class="btn-action" style="background: #334155;" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i></button>
                     `;
                 }
@@ -763,134 +821,210 @@
 
         function handleBottomUserClick() {
             if (currentUser) {
-                openProfileModal();
+                openMyProfilePage();
             } else {
                 openAuthModal();
             }
         }
 
-        function focusSearch() {
-            const searchInput = document.getElementById('searchInput');
-            searchInput.focus();
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        function scrollToTop() {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        function openAuthModal() {
-            isRegisterMode = false;
-            updateAuthModalView();
-            openModal('authModal');
-        }
-
-        function toggleAuthMode() {
-            isRegisterMode = !isRegisterMode;
-            updateAuthModalView();
-        }
-
-        function updateAuthModalView() {
-            const title = document.getElementById('authModalTitle');
-            const sub = document.getElementById('authModalSub');
-            const nameGroup = document.getElementById('nameFieldGroup');
-            const submitBtn = document.getElementById('authSubmitBtn');
-            const switchText = document.getElementById('authSwitchText');
-
-            if (isRegisterMode) {
-                title.innerText = "إنشاء حساب جديد";
-                sub.innerText = "أدخل بياناتك لإنشاء حساب جديد";
-                nameGroup.style.display = "block";
-                document.getElementById('authName').required = true;
-                submitBtn.innerText = "إنشاء الحساب";
-                switchText.innerHTML = `لديك حساب بالفعل؟ <span onclick="toggleAuthMode()">تسجيل الدخول</span>`;
-            } else {
-                title.innerText = "تسجيل الدخول";
-                sub.innerText = "أدخل بريدك الإلكتروني وكلمة المرور للوصول لحسابك";
-                nameGroup.style.display = "none";
-                document.getElementById('authName').required = false;
-                submitBtn.innerText = "دخول";
-                switchText.innerHTML = `ليس لديك حساب؟ <span onclick="toggleAuthMode()">إنشاء حساب جديد</span>`;
+        // فتح صفحة "حسابي" المخصصة
+        function openMyProfilePage() {
+            if (!currentUser) {
+                openAuthModal();
+                return;
             }
+            document.getElementById('profilePageAvatar').src = currentUser.avatar || 'https://cdn-icons-png.flaticon.com/512/149/149071.png';
+            document.getElementById('profilePageName').innerText = currentUser.name;
+            document.getElementById('profilePageEmail').innerText = currentUser.email;
+            document.getElementById('profileInputName').value = currentUser.name;
+            switchPage('profilePage');
         }
 
-        function handleAuthSubmit(event) {
-            event.preventDefault();
-            const email = document.getElementById('authEmail').value.trim();
-            const password = document.getElementById('authPassword').value;
+        // اختيار صورة من المعرض وتغييرها باستخدام FileReader (Base64)
+        function triggerAvatarUpload() {
+            document.getElementById('avatarFileInput').click();
+        }
 
-            if (isRegisterMode) {
-                const name = document.getElementById('authName').value.trim();
-                const existingUser = usersDB.find(u => u.email === email);
-                if (existingUser) {
-                    alert('هذا البريد الإلكتروني مسجل مسبقاً!');
-                    return;
-                }
-
-                const newUser = {
-                    id: 'user_' + Date.now(),
-                    name: name,
-                    email: email,
-                    password: password,
-                    avatar: 'https://cdn-icons-png.flaticon.com/512/149/149071.png'
+        function handleImageUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const base64Image = e.target.result;
+                    document.getElementById('profilePageAvatar').src = base64Image;
+                    if (currentUser) {
+                        currentUser.avatar = base64Image;
+                        saveCurrentUserData();
+                    }
                 };
-
-                usersDB.push(newUser);
-                localStorage.setItem('beshīqa_users', JSON.stringify(usersDB));
-                currentUser = newUser;
-                localStorage.setItem('beshīqa_user', JSON.stringify(currentUser));
-                
-                closeModal('authModal');
-                updateAuthUI();
-                renderRestaurants();
-                alert('تم إنشاء الحساب بنجاح!');
-            } else {
-                const foundUser = usersDB.find(u => u.email === email && u.password === password);
-                if (!foundUser) {
-                    alert('البريد الإلكتروني أو كلمة المرور غير صحيحة!');
-                    return;
-                }
-
-                currentUser = foundUser;
-                localStorage.setItem('beshīqa_user', JSON.stringify(currentUser));
-                closeModal('authModal');
-                updateAuthUI();
-                renderRestaurants();
+                reader.readAsDataURL(file);
             }
-            document.getElementById('authForm').reset();
         }
 
-        function logout() {
-            currentUser = null;
-            localStorage.removeItem('beshīqa_user');
-            closeModal('profileModal');
-            updateAuthUI();
-            renderRestaurants();
-        }
-
-        function openProfileModal() {
-            if (!currentUser) return;
-            document.getElementById('editProfileName').value = currentUser.name;
-            document.getElementById('editProfileAvatar').value = currentUser.avatar;
-            openModal('profileModal');
-        }
-
-        function handleSaveProfile(event) {
+        function handleSaveProfilePage(event) {
             event.preventDefault();
             if (!currentUser) return;
 
-            currentUser.name = document.getElementById('editProfileName').value.trim();
-            currentUser.avatar = document.getElementById('editProfileAvatar').value.trim();
+            currentUser.name = document.getElementById('profileInputName').value.trim();
+            saveCurrentUserData();
+            alert('تم حفظ بيانات حسابك بنجاح!');
+        }
 
+        function saveCurrentUserData() {
             const index = usersDB.findIndex(u => u.id === currentUser.id);
             if (index !== -1) {
                 usersDB[index] = currentUser;
                 localStorage.setItem('beshīqa_users', JSON.stringify(usersDB));
             }
-
             localStorage.setItem('beshīqa_user', JSON.stringify(currentUser));
-            closeModal('profileModal');
             updateAuthUI();
+        }
+
+        // هل نسيت كلمة السر؟ (إعادة التعيين)
+        function openForgotModal() {
+            closeModal('authModal');
+            document.getElementById('forgotStep1').style.display = 'block';
+            document.getElementById('forgotStep2').style.display = 'none';
+            openModal('forgotModal');
+        }
+
+        function handleSendResetCode(event) {
+            event.preventDefault();
+            resetUserEmail = document.getElementById('resetEmailInput').value.trim();
+            const userExists = usersDB.find(u => u.email === resetUserEmail);
+
+            if (!userExists) {
+                alert('هذا البريد الإلكتروني غير مسجل لدينا!');
+                return;
+            }
+
+            // توليد رمز تحقق عشوائي من 6 أرقام ومحاكاة إرساله للبريد
+            generatedResetCode = Math.floor(100000 + Math.random() * 900000).toString();
+            alert(`تم إرسال رمز التحقق إلى بريدك الإلكتروني (${resetUserEmail}):\n\nرمز التحقق الخاص بك هو: ${generatedResetCode}`);
+
+            document.getElementById('forgotStep1').style.display = 'none';
+            document.getElementById('forgotStep2').style.display = 'block';
+        }
+
+        function handleVerifyAndReset(event) {
+            event.preventDefault();
+            const inputCode = document.getElementById('resetCodeInput').value.trim();
+            const newPassword = document.getElementById('newResetPassword').value;
+
+            if (inputCode !== generatedResetCode) {
+                alert('رمز التحقق غير صحيح!');
+                return;
+            }
+
+            // تحديث كلمة السر للمستخدم
+            const userIndex = usersDB.findIndex(u => u.email === resetUserEmail);
+            if (userIndex !== -1) {
+                usersDB[userIndex].password = newPassword;
+                localStorage.setItem('beshīqa_users', JSON.stringify(usersDB));
+                alert('تم تغيير كلمة المرور بنجاح! يمكنك الآن تسجيل الدخول بكلمة المرور الجديدة.');
+                closeModal('forgotModal');
+                openAuthModal();
+            }
+        }
+
+        // فتح صفحة المطعم المستقلة بالكامل عند الضغط عليه
+        function openRestaurantPage(restId) {
+            const rest = restaurants.find(r => r.id === restId);
+            if (!rest) return;
+
+            document.getElementById('restPageBanner').src = rest.image;
+            document.getElementById('restPageTitle').innerText = rest.name;
+            document.getElementById('restPageCat').innerText = getCategoryName(rest.category) + ' • ' + rest.time;
+
+            const ownerActions = document.getElementById('restPageOwnerActions');
+            if (currentUser && rest.ownerId === currentUser.id) {
+                ownerActions.innerHTML = `<button class="btn-action" onclick="openEditModal(${rest.id})"><i class="fa-solid fa-pen-to-square"></i> تعديل مطعمي</button>`;
+            } else {
+                ownerActions.innerHTML = '';
+            }
+
+            const menuContainer = document.getElementById('restPageMenuContainer');
+            menuContainer.innerHTML = '';
+            
+            rest.menu.forEach(item => {
+                menuContainer.innerHTML += `
+                    <div class="menu-item-card">
+                        <img src="${item.image || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=500'}" class="menu-item-img" alt="${item.name}">
+                        <div class="menu-item-details">
+                            <div class="menu-item-name">${item.name}</div>
+                            <div class="menu-item-price">${item.price.toLocaleString()} د.ع</div>
+                            <button class="btn-action" style="width: 100%; justify-content: center; font-size: 11px; padding: 6px;" onclick="addToCart('${item.name}', ${item.price})"><i class="fa-solid fa-plus"></i> إضافة للسلة</button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            switchPage('restaurantDetailPage');
+        }
+
+        // معالجة اختيار صور المطعم والوجبة من الجهاز
+        function handleRestImageFile(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (event) => { tempRestImgBase64 = event.target.result; };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function handleMealImageFile(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (event) => { tempMealImgBase64 = event.target.result; };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function handleSaveRestaurant(event) {
+            event.preventDefault();
+            if (!currentUser) return;
+
+            const editId = document.getElementById('editRestId').value;
+            const name = document.getElementById('newRestName').value;
+            const category = document.getElementById('newRestCat').value;
+            const itemName = document.getElementById('newItemName').value;
+            const itemPrice = parseInt(document.getElementById('newItemPrice').value);
+
+            const restImg = tempRestImgBase64 || "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=500";
+            const mealImg = tempMealImgBase64 || "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=500";
+
+            if (editId) {
+                let rest = restaurants.find(r => r.id == editId);
+                if (rest && rest.ownerId === currentUser.id) {
+                    rest.name = name;
+                    rest.category = category;
+                    if (tempRestImgBase64) rest.image = tempRestImgBase64;
+                    rest.menu = [{ id: Date.now(), name: itemName, price: itemPrice, image: mealImg }];
+                }
+            } else {
+                // إنشاء ونشر المطعم للعامة
+                const newRest = {
+                    id: Date.now(),
+                    ownerId: currentUser.id,
+                    name,
+                    category,
+                    image: restImg,
+                    rating: "5.0",
+                    time: "20-30 دقيقة",
+                    menu: [{ id: Date.now() + 1, name: itemName, price: itemPrice, image: mealImg }]
+                };
+                restaurants.push(newRest);
+            }
+
+            // حفظ في localStorage العام
+            localStorage.setItem('beshīqa_restaurants', JSON.stringify(restaurants));
+            renderRestaurants();
+            closeModal('addRestaurantModal');
+            document.getElementById('addRestForm').reset();
+            tempRestImgBase64 = "";
+            tempMealImgBase64 = "";
+            alert('تم نشر المطعم بنجاح للعامة!');
         }
 
         function renderRestaurants(data = restaurants) {
@@ -900,7 +1034,7 @@
             data.forEach(rest => {
                 let isOwner = currentUser && rest.ownerId === currentUser.id;
                 container.innerHTML += `
-                    <div class="restaurant-card" onclick="openMenu(${rest.id})">
+                    <div class="restaurant-card" onclick="openRestaurantPage(${rest.id})">
                         <img src="${rest.image}" class="restaurant-img" alt="${rest.name}">
                         ${isOwner ? '<span class="owner-badge"><i class="fa-solid fa-crown"></i> مطعمك</span>' : ''}
                         <div class="restaurant-info">
@@ -936,120 +1070,72 @@
             renderRestaurants(restaurants.filter(r => r.name.toLowerCase().includes(query)));
         }
 
-        function openMenu(restId) {
-            const rest = restaurants.find(r => r.id === restId);
-            document.getElementById('modalRestName').innerText = rest.name;
-            document.getElementById('modalRestCat').innerText = getCategoryName(rest.category);
-            document.getElementById('modalRestImg').src = rest.image;
+        function openAuthModal() {
+            document.getElementById('nameFieldGroup').style.display = "none";
+            openModal('authModal');
+        }
+
+        function toggleAuthMode() {
+            const nameGroup = document.getElementById('nameFieldGroup');
+            const submitBtn = document.getElementById('authSubmitBtn');
+            const isReg = nameGroup.style.display === "none";
             
-            const ownerActions = document.getElementById('ownerActionsContainer');
-            if (currentUser && rest.ownerId === currentUser.id) {
-                ownerActions.innerHTML = `<button class="btn-action" onclick="openEditModal(${rest.id})"><i class="fa-solid fa-pen-to-square"></i> تعديل</button>`;
+            nameGroup.style.display = isReg ? "block" : "none";
+            submitBtn.innerText = isReg ? "إنشاء الحساب" : "دخول";
+        }
+
+        function handleAuthSubmit(event) {
+            event.preventDefault();
+            const email = document.getElementById('authEmail').value.trim();
+            const password = document.getElementById('authPassword').value;
+            const isReg = document.getElementById('nameFieldGroup').style.display !== "none";
+
+            if (isReg) {
+                const name = document.getElementById('authName').value.trim();
+                if (usersDB.find(u => u.email === email)) {
+                    alert('البريد الإلكتروني مسجل مسبقاً!');
+                    return;
+                }
+                currentUser = { id: 'user_' + Date.now(), name, email, password, avatar: 'https://cdn-icons-png.flaticon.com/512/149/149071.png' };
+                usersDB.push(currentUser);
+                localStorage.setItem('beshīqa_users', JSON.stringify(usersDB));
             } else {
-                ownerActions.innerHTML = '';
+                const user = usersDB.find(u => u.email === email && u.password === password);
+                if (!user) { alert('بيانات الدخول غير صحيحة!'); return; }
+                currentUser = user;
             }
 
-            const menuContainer = document.getElementById('menuContainer');
-            menuContainer.innerHTML = '';
-            
-            rest.menu.forEach(item => {
-                menuContainer.innerHTML += `
-                    <div class="menu-item-card">
-                        <img src="${item.image}" class="menu-item-img" alt="${item.name}">
-                        <div class="menu-item-details">
-                            <div class="menu-item-name">${item.name}</div>
-                            <div class="menu-item-price">${item.price.toLocaleString()} د.ع</div>
-                            <button class="btn-action" style="width: 100%; justify-content: center; font-size: 11px; padding: 6px;" onclick="addToCart('${item.name}', ${item.price})"><i class="fa-solid fa-plus"></i> للسلة</button>
-                        </div>
-                    </div>
-                `;
-            });
+            localStorage.setItem('beshīqa_user', JSON.stringify(currentUser));
+            closeModal('authModal');
+            updateAuthUI();
+            renderRestaurants();
+        }
 
-            openModal('menuModal');
+        function logout() {
+            currentUser = null;
+            localStorage.removeItem('beshīqa_user');
+            switchPage('homePage');
+            updateAuthUI();
+            renderRestaurants();
         }
 
         function openAddModal() {
-            if (!currentUser) {
-                openAuthModal();
-                return;
-            }
-            document.getElementById('modalFormTitle').innerText = 'إضافة مطعم جديد';
-            document.getElementById('editRestId').value = '';
+            if (!currentUser) { openAuthModal(); return; }
             document.getElementById('addRestForm').reset();
             openModal('addRestaurantModal');
-        }
-
-        function openEditModal(restId) {
-            closeModal('menuModal');
-            const rest = restaurants.find(r => r.id === restId);
-            document.getElementById('modalFormTitle').innerText = 'تعديل بيانات المطعم';
-            document.getElementById('editRestId').value = rest.id;
-            document.getElementById('newRestName').value = rest.name;
-            document.getElementById('newRestCat').value = rest.category;
-            document.getElementById('newRestImg').value = rest.image;
-            if (rest.menu.length > 0) {
-                document.getElementById('newItemName').value = rest.menu[0].name;
-                document.getElementById('newItemImg').value = rest.menu[0].image;
-                document.getElementById('newItemPrice').value = rest.menu[0].price;
-            }
-            openModal('addRestaurantModal');
-        }
-
-        function handleSaveRestaurant(event) {
-            event.preventDefault();
-            if (!currentUser) return;
-
-            const editId = document.getElementById('editRestId').value;
-            const name = document.getElementById('newRestName').value;
-            const category = document.getElementById('newRestCat').value;
-            const image = document.getElementById('newRestImg').value;
-            const itemName = document.getElementById('newItemName').value;
-            const itemImg = document.getElementById('newItemImg').value;
-            const itemPrice = parseInt(document.getElementById('newItemPrice').value);
-
-            if (editId) {
-                let rest = restaurants.find(r => r.id == editId);
-                if (rest && rest.ownerId === currentUser.id) {
-                    rest.name = name;
-                    rest.category = category;
-                    rest.image = image;
-                    rest.menu = [{ id: Date.now(), name: itemName, price: itemPrice, image: itemImg }];
-                }
-            } else {
-                const newRest = {
-                    id: Date.now(),
-                    ownerId: currentUser.id,
-                    name,
-                    category,
-                    image,
-                    rating: "5.0",
-                    time: "20-30 دقيقة",
-                    menu: [{ id: Date.now() + 1, name: itemName, price: itemPrice, image: itemImg }]
-                };
-                restaurants.push(newRest);
-            }
-
-            localStorage.setItem('beshīqa_restaurants', JSON.stringify(restaurants));
-            renderRestaurants();
-            closeModal('addRestaurantModal');
-            document.getElementById('addRestForm').reset();
         }
 
         function addToCart(name, price) {
             const existing = cart.find(item => item.name === name);
-            if (existing) {
-                existing.qty++;
-            } else {
-                cart.push({ name, price, qty: 1 });
-            }
+            if (existing) existing.qty++;
+            else cart.push({ name, price, qty: 1 });
             updateCart();
         }
 
         function updateCart() {
             const cartContainer = document.getElementById('cartItemsContainer');
             cartContainer.innerHTML = '';
-            let total = 0;
-            let count = 0;
+            let total = 0, count = 0;
 
             cart.forEach(item => {
                 total += item.price * item.qty;
@@ -1065,25 +1151,22 @@
                 `;
             });
 
-            const cartCountBottom = document.getElementById('cartCountBottom');
-            if (cartCountBottom) cartCountBottom.innerText = count;
-            const cartTotalEl = document.getElementById('cartTotal');
-            if (cartTotalEl) cartTotalEl.innerText = total.toLocaleString() + ' د.ع';
+            document.getElementById('cartCountBottom').innerText = count;
+            document.getElementById('cartTotal').innerText = total.toLocaleString() + ' د.ع';
         }
 
-        function toggleCart() {
-            document.getElementById('cartSidebar').classList.toggle('open');
-        }
-
+        function toggleCart() { document.getElementById('cartSidebar').classList.toggle('open'); }
         function checkout() {
-            if (cart.length === 0) {
-                alert('السلة فارغة!');
-                return;
-            }
-            alert('تم استلام طلبك بنجاح! سيصلك الطلب قريباً.');
+            if (cart.length === 0) return alert('السلة فارغة!');
+            alert('تم استلام طلبك بنجاح!');
             cart = [];
             updateCart();
             toggleCart();
+        }
+
+        function focusSearch() {
+            switchPage('homePage');
+            document.getElementById('searchInput').focus();
         }
 
         function openModal(id) { document.getElementById(id).style.display = 'flex'; }
