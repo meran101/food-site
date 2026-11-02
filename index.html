@@ -145,6 +145,12 @@
             padding: 5px 12px;
             border-radius: 20px;
             font-size: 13px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .user-pill:hover {
+            border-color: var(--primary-color);
         }
 
         .user-pill img {
@@ -258,7 +264,6 @@
             font-weight: bold;
         }
 
-        /* Owner badge on card */
         .owner-badge {
             position: absolute;
             top: 10px;
@@ -358,35 +363,40 @@
             margin-bottom: 10px;
         }
 
-        /* Social Login Buttons */
-        .social-btn {
+        /* Forms & Inputs */
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .form-group input, .form-group select {
             width: 100%;
-            padding: 12px;
-            border-radius: 12px;
+            padding: 10px;
+            border-radius: 10px;
             border: 1px solid var(--border-color);
             background-color: var(--bg-dark);
-            color: white;
-            font-weight: 600;
+            color: #fff;
+            outline: none;
             font-size: 14px;
+        }
+
+        .form-switch-text {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .form-switch-text span {
+            color: var(--primary-color);
             cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            margin-bottom: 12px;
-            transition: 0.3s;
-        }
-
-        .social-btn:hover {
-            background-color: #334155;
-        }
-
-        .btn-google {
-            border-color: #db4437;
-        }
-
-        .btn-apple {
-            border-color: #fff;
+            font-weight: bold;
         }
 
         /* Cart Sidebar */
@@ -424,27 +434,6 @@
             padding: 10px 0;
             border-bottom: 1px solid var(--border-color);
         }
-
-        .form-group {
-            margin-bottom: 15px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 5px;
-            font-size: 13px;
-            color: var(--text-muted);
-        }
-
-        .form-group input, .form-group select {
-            width: 100%;
-            padding: 10px;
-            border-radius: 10px;
-            border: 1px solid var(--border-color);
-            background-color: var(--bg-dark);
-            color: #fff;
-            outline: none;
-        }
     </style>
 </head>
 <body>
@@ -480,20 +469,51 @@
         <div class="restaurants-grid" id="restaurantsContainer"></div>
     </div>
 
-    <!-- Modal: Login Selection -->
-    <div class="modal" id="loginModal">
-        <div class="modal-content" style="max-width: 400px; text-align: center;">
-            <span class="close-btn" onclick="closeModal('loginModal')">&times;</span>
-            <h2 style="color: var(--primary-color); margin-bottom: 10px;">تسجيل الدخول</h2>
-            <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 25px;">اختر طريقة تسجيل الدخول لإدارة مطعمك وحفظ بياناتك</p>
+    <!-- Modal: Auth (Login / Register) -->
+    <div class="modal" id="authModal">
+        <div class="modal-content" style="max-width: 400px;">
+            <span class="close-btn" onclick="closeModal('authModal')">&times;</span>
+            <h2 id="authModalTitle" style="color: var(--primary-color); margin-bottom: 5px; text-align: center;">تسجيل الدخول</h2>
+            <p id="authModalSub" style="color: var(--text-muted); font-size: 13px; margin-bottom: 20px; text-align: center;">أدخل بريدك الإلكتروني وكلمة المرور للمتابعة</p>
             
-            <button class="social-btn btn-google" onclick="loginWith('Google', 'https://cdn-icons-png.flaticon.com/512/2991/2991148.png')">
-                <i class="fa-brands fa-google" style="color: #db4437; font-size: 18px;"></i> متابعة باستخدام Google
-            </button>
-            
-            <button class="social-btn btn-apple" onclick="loginWith('Apple ID', 'https://cdn-icons-png.flaticon.com/512/0/747.png')">
-                <i class="fa-brands fa-apple" style="color: #fff; font-size: 18px;"></i> متابعة باستخدام Apple
-            </button>
+            <form id="authForm" onsubmit="handleAuthSubmit(event)">
+                <div class="form-group" id="nameFieldGroup" style="display: none;">
+                    <label>الاسم الكامل</label>
+                    <input type="text" id="authName" placeholder="أدخل اسمك الكامل">
+                </div>
+                <div class="form-group">
+                    <label>البريد الإلكتروني</label>
+                    <input type="email" id="authEmail" required placeholder="name@example.com">
+                </div>
+                <div class="form-group">
+                    <label>كلمة المرور</label>
+                    <input type="password" id="authPassword" required placeholder="••••••••">
+                </div>
+                <button type="submit" class="btn-action" id="authSubmitBtn" style="width: 100%; justify-content: center; margin-top: 10px;">دخول</button>
+            </form>
+
+            <div class="form-switch-text" id="authSwitchText">
+                ليس لديك حساب؟ <span onclick="toggleAuthMode()">إنشاء حساب جديد</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Edit Profile -->
+    <div class="modal" id="profileModal">
+        <div class="modal-content" style="max-width: 450px;">
+            <span class="close-btn" onclick="closeModal('profileModal')">&times;</span>
+            <h2 style="color: var(--primary-color); margin-bottom: 15px;">تعديل الملف الشخصي</h2>
+            <form onsubmit="handleSaveProfile(event)">
+                <div class="form-group">
+                    <label>الاسم الظاهر</label>
+                    <input type="text" id="editProfileName" required>
+                </div>
+                <div class="form-group">
+                    <label>رابط الصورة الشخصية (Avatar URL)</label>
+                    <input type="url" id="editProfileAvatar" required placeholder="https://example.com/avatar.jpg">
+                </div>
+                <button type="submit" class="btn-action" style="width: 100%; justify-content: center; margin-top: 10px;">حفظ التغييرات</button>
+            </form>
         </div>
     </div>
 
@@ -603,43 +623,120 @@
         ];
 
         let restaurants = JSON.parse(localStorage.getItem('beshīqa_restaurants')) || defaultRestaurants;
+        let usersDB = JSON.parse(localStorage.getItem('beshīqa_users')) || [];
         let currentUser = JSON.parse(localStorage.getItem('beshīqa_user')) || null;
         let cart = [];
         let currentActiveRestId = null;
+        let isRegisterMode = false;
 
-        // تحديث واجهة شريط التنقل (تسجيل الدخول / الملف الشخصي)
+        // تحديث واجهة الهيدر (تسجيل الدخول / الملف الشخصي)
         function updateAuthUI() {
             const navAuthArea = document.getElementById('navAuthArea');
             if (currentUser) {
                 navAuthArea.innerHTML = `
-                    <div class="user-pill">
-                        <img src="${currentUser.avatar}" alt="User">
+                    <div class="user-pill" onclick="openProfileModal()" title="تعديل الملف الشخصي">
+                        <img src="${currentUser.avatar || 'https://cdn-icons-png.flaticon.com/512/149/149071.png'}" alt="User">
                         <span>${currentUser.name}</span>
                     </div>
                     <button class="btn-action" onclick="openAddModal()"><i class="fa-solid fa-plus"></i> إضافة مطعم</button>
                     <button class="btn-action cart-btn" onclick="toggleCart()"><i class="fa-solid fa-cart-shopping"></i> <span class="cart-count" id="cartCount">0</span></button>
-                    <button class="btn-action" style="background: #334155;" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i></button>
+                    <button class="btn-action" style="background: #334155;" onclick="logout()" title="تسجيل الخروج"><i class="fa-solid fa-right-from-bracket"></i></button>
                 `;
             } else {
                 navAuthArea.innerHTML = `
-                    <button class="btn-action" onclick="openModal('loginModal')"><i class="fa-solid fa-user"></i> تسجيل الدخول</button>
+                    <button class="btn-action" onclick="openAuthModal()"><i class="fa-solid fa-user"></i> تسجيل الدخول</button>
                     <button class="btn-action cart-btn" onclick="toggleCart()"><i class="fa-solid fa-cart-shopping"></i> <span class="cart-count" id="cartCount">0</span></button>
                 `;
             }
+            updateCart();
         }
 
-        // محاكاة تسجيل الدخول بـ Google أو Apple
-        function loginWith(provider, avatarUrl) {
-            currentUser = {
-                id: 'user_' + Date.now(),
-                name: provider === 'Google' ? 'مستخدم Google' : 'مستخدم Apple',
-                avatar: avatarUrl
-            };
-            localStorage.setItem('beshīqa_user', JSON.stringify(currentUser));
-            closeModal('loginModal');
-            updateAuthUI();
-            renderRestaurants();
-            alert('تم تسجيل الدخول بنجاح عبر ' + provider + '!');
+        // تبديل نافذة الدخول بين تسجيل الدخول وإنشاء حساب
+        function openAuthModal() {
+            isRegisterMode = false;
+            updateAuthModalView();
+            openModal('authModal');
+        }
+
+        function toggleAuthMode() {
+            isRegisterMode = !isRegisterMode;
+            updateAuthModalView();
+        }
+
+        function updateAuthModalView() {
+            const title = document.getElementById('authModalTitle');
+            const sub = document.getElementById('authModalSub');
+            const nameGroup = document.getElementById('nameFieldGroup');
+            const submitBtn = document.getElementById('authSubmitBtn');
+            const switchText = document.getElementById('authSwitchText');
+
+            if (isRegisterMode) {
+                title.innerText = "إنشاء حساب جديد";
+                sub.innerText = "أدخل بياناتك لإنشاء حساب جديد واستخدامه في الموقع";
+                nameGroup.style.display = "block";
+                document.getElementById('authName').required = true;
+                submitBtn.innerText = "إنشاء الحساب";
+                switchText.innerHTML = `لديك حساب بالفعل؟ <span onclick="toggleAuthMode()">تسجيل الدخول</span>`;
+            } else {
+                title.innerText = "تسجيل الدخول";
+                sub.innerText = "أدخل بريدك الإلكتروني وكلمة المرور للوصول لحسابك";
+                nameGroup.style.display = "none";
+                document.getElementById('authName').required = false;
+                submitBtn.innerText = "دخول";
+                switchText.innerHTML = `ليس لديك حساب؟ <span onclick="toggleAuthMode()">إنشاء حساب جديد</span>`;
+            }
+        }
+
+        // معالجة إرسال نموذج الدخول أو التسجيل
+        function handleAuthSubmit(event) {
+            event.preventDefault();
+            const email = document.getElementById('authEmail').value.trim();
+            const password = document.getElementById('authPassword').value;
+
+            if (isRegisterMode) {
+                const name = document.getElementById('authName').value.trim();
+                // التحقق هل البريد مسجل مسبقاً
+                const existingUser = usersDB.find(u => u.email === email);
+                if (existingUser) {
+                    alert('هذا البريد الإلكتروني مسجل مسبقاً! يرجى تسجيل الدخول.');
+                    return;
+                }
+
+                const newUser = {
+                    id: 'user_' + Date.now(),
+                    name: name,
+                    email: email,
+                    password: password,
+                    avatar: 'https://cdn-icons-png.flaticon.com/512/149/149071.png'
+                };
+
+                usersDB.push(newUser);
+                localStorage.setItem('beshīqa_users', JSON.stringify(usersDB));
+
+                currentUser = newUser;
+                localStorage.setItem('beshīqa_user', JSON.stringify(currentUser));
+                
+                closeModal('authModal');
+                updateAuthUI();
+                renderRestaurants();
+                alert('تم إنشاء الحساب وتسجيل الدخول بنجاح!');
+            } else {
+                // محاولة تسجيل الدخول للمستخدم عبر البريد والباسورد
+                const foundUser = usersDB.find(u => u.email === email && u.password === password);
+                if (!foundUser) {
+                    alert('البريد الإلكتروني أو كلمة المرور غير صحيحة!');
+                    return;
+                }
+
+                currentUser = foundUser;
+                localStorage.setItem('beshīqa_user', JSON.stringify(currentUser));
+
+                closeModal('authModal');
+                updateAuthUI();
+                renderRestaurants();
+                alert('مرحباً بعودتك، ' + currentUser.name + '!');
+            }
+            document.getElementById('authForm').reset();
         }
 
         function logout() {
@@ -648,6 +745,34 @@
             updateAuthUI();
             renderRestaurants();
             alert('تم تسجيل الخروج بنجاح.');
+        }
+
+        // تعديل الملف الشخصي
+        function openProfileModal() {
+            if (!currentUser) return;
+            document.getElementById('editProfileName').value = currentUser.name;
+            document.getElementById('editProfileAvatar').value = currentUser.avatar;
+            openModal('profileModal');
+        }
+
+        function handleSaveProfile(event) {
+            event.preventDefault();
+            if (!currentUser) return;
+
+            currentUser.name = document.getElementById('editProfileName').value.trim();
+            currentUser.avatar = document.getElementById('editProfileAvatar').value.trim();
+
+            // تحديث في جدول المستخدمين العام أيضا
+            const index = usersDB.findIndex(u => u.id === currentUser.id);
+            if (index !== -1) {
+                usersDB[index] = currentUser;
+                localStorage.setItem('beshīqa_users', JSON.stringify(usersDB));
+            }
+
+            localStorage.setItem('beshīqa_user', JSON.stringify(currentUser));
+            closeModal('profileModal');
+            updateAuthUI();
+            alert('تم تحديث الملف الشخصي بنجاح!');
         }
 
         // عرض المطاعم
@@ -703,7 +828,6 @@
             document.getElementById('modalRestCat').innerText = getCategoryName(rest.category);
             document.getElementById('modalRestImg').src = rest.image;
             
-            // زر التعديل يظهر فقط إذا كان المستخدم هو صاحب المطعم المسجل
             const ownerActions = document.getElementById('ownerActionsContainer');
             if (currentUser && rest.ownerId === currentUser.id) {
                 ownerActions.innerHTML = `<button class="btn-action" onclick="openEditModal(${rest.id})"><i class="fa-solid fa-pen-to-square"></i> تعديل المطعم</button>`;
@@ -730,10 +854,9 @@
             openModal('menuModal');
         }
 
-        // فتح نموذج إضافة مطعم
         function openAddModal() {
             if (!currentUser) {
-                openModal('loginModal');
+                openAuthModal();
                 return;
             }
             document.getElementById('modalFormTitle').innerText = 'إضافة مطعم جديد';
@@ -742,7 +865,6 @@
             openModal('addRestaurantModal');
         }
 
-        // فتح نموذج تعديل المطعم
         function openEditModal(restId) {
             closeModal('menuModal');
             const rest = restaurants.find(r => r.id === restId);
@@ -759,7 +881,6 @@
             openModal('addRestaurantModal');
         }
 
-        // حفظ أو تعديل المطعم
         function handleSaveRestaurant(event) {
             event.preventDefault();
             if (!currentUser) return;
@@ -773,7 +894,6 @@
             const itemPrice = parseInt(document.getElementById('newItemPrice').value);
 
             if (editId) {
-                // تعديل مطعم موجود مسبقاً
                 let rest = restaurants.find(r => r.id == editId);
                 if (rest && rest.ownerId === currentUser.id) {
                     rest.name = name;
@@ -782,7 +902,6 @@
                     rest.menu = [{ id: Date.now(), name: itemName, price: itemPrice, image: itemImg }];
                 }
             } else {
-                // إضافة مطعم جديد مرتبط بحساب المستخدم الحالي
                 const newRest = {
                     id: Date.now(),
                     ownerId: currentUser.id,
@@ -834,8 +953,10 @@
                 `;
             });
 
-            document.getElementById('cartCount').innerText = count;
-            document.getElementById('cartTotal').innerText = total.toLocaleString() + ' د.ع';
+            const cartCountEl = document.getElementById('cartCount');
+            if (cartCountEl) cartCountEl.innerText = count;
+            const cartTotalEl = document.getElementById('cartTotal');
+            if (cartTotalEl) cartTotalEl.innerText = total.toLocaleString() + ' د.ع';
         }
 
         function toggleCart() {
@@ -853,11 +974,11 @@
             toggleCart();
         }
 
-        // النوافذ المنبثقة
+        // التحكم في النوافذ المنبثقة
         function openModal(id) { document.getElementById(id).style.display = 'flex'; }
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
-        // التشغيل الأول
+        // التشغيل الأولي
         updateAuthUI();
         renderRestaurants();
     </script>
