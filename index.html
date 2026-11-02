@@ -230,7 +230,18 @@
         .menu-item-name { font-weight: bold; font-size: 14px; margin-bottom: 4px; }
         .menu-item-price { color: var(--primary-color); font-size: 13px; font-weight: bold; margin-bottom: 8px; }
 
-        /* Modals */
+        /* تصميم صفحة تسجيل الدخول المستقلة */
+        .auth-page-container {
+            max-width: 420px;
+            margin: 30px auto;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        }
+
+        /* Modals الباقية */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.85); z-index: 1000; justify-content: center; align-items: center; padding: 15px; backdrop-filter: blur(4px); }
         .modal-content { background-color: var(--card-bg); border-radius: 16px; width: 100%; max-width: 450px; max-height: 90vh; overflow-y: auto; border: 1px solid var(--border-color); position: relative; padding: 22px; }
         .close-btn { position: absolute; top: 15px; left: 15px; font-size: 22px; color: var(--text-muted); cursor: pointer; }
@@ -239,7 +250,6 @@
         .form-group label { display: block; margin-bottom: 4px; font-size: 12px; color: var(--text-muted); }
         .form-group input, .form-group select { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); background-color: var(--bg-dark); color: #fff; outline: none; font-size: 13px; }
         
-        /* تصميم حقل كلمة المرور وأيقونة العين */
         .password-container {
             position: relative;
             width: 100%;
@@ -325,7 +335,36 @@
         <div class="menu-grid" id="restPageMenuContainer"></div>
     </div>
 
-    <!-- صفحة حسابي المخصصة -->
+    <!-- صفحة تسجيل الدخول / إنشاء الحساب المستقلة -->
+    <div class="page-view" id="authPageView">
+        <button class="back-btn" onclick="switchPage('homePage')"><i class="fa-solid fa-arrow-right"></i> العودة للرئيسية</button>
+        <div class="auth-page-container">
+            <h2 id="authPageTitle" style="color: var(--primary-color); margin-bottom: 15px; text-align: center;">تسجيل الدخول</h2>
+            
+            <form id="standaloneAuthForm" onsubmit="handleAuthSubmit(event)">
+                <div class="form-group" id="nameFieldGroup" style="display: none;">
+                    <label>الاسم الكامل</label>
+                    <input type="text" id="authName" placeholder="اسمك الكامل">
+                </div>
+                <div class="form-group">
+                    <label>البريد الإلكتروني</label>
+                    <input type="email" id="authEmail" required placeholder="name@example.com">
+                </div>
+                <div class="form-group">
+                    <label>كلمة المرور</label>
+                    <div class="password-container">
+                        <input type="password" id="authPassword" required placeholder="••••••••">
+                        <i class="fa-solid fa-eye toggle-password" onclick="togglePasswordVisibility('authPassword', this)"></i>
+                    </div>
+                    <span class="forgot-link" onclick="openForgotModal()">هل نسيت كلمة السر؟</span>
+                </div>
+                <button type="submit" class="btn-action" id="authSubmitBtn" style="width: 100%; justify-content: center; margin-top: 10px;">دخول</button>
+            </form>
+            <div class="form-switch-text"><span onclick="toggleAuthMode()" id="switchAuthText">ليس لديك حساب؟ انشاء حساب جديد</span></div>
+        </div>
+    </div>
+
+    <!-- صفحة حسابي المخصصة (عندما يكون المستخدم مسجلاً دخوله) -->
     <div class="page-view" id="profilePage">
         <button class="back-btn" onclick="switchPage('homePage')"><i class="fa-solid fa-arrow-right"></i> العودة للرئيسية</button>
         <div class="profile-container">
@@ -337,16 +376,11 @@
                 </div>
                 <h2 id="profilePageName" style="color: var(--primary-color);"></h2>
                 <p id="profilePageEmail" style="color: var(--text-muted); font-size: 13px;"></p>
-                <p id="profilePagePhone" style="color: var(--text-muted); font-size: 13px;"></p>
             </div>
             <form onsubmit="handleSaveProfilePage(event)">
                 <div class="form-group">
                     <label>الاسم الكامل</label>
                     <input type="text" id="profileInputName" required>
-                </div>
-                <div class="form-group">
-                    <label>رقم الهاتف</label>
-                    <input type="tel" id="profileInputPhone" required>
                 </div>
                 <button type="submit" class="btn-action" style="width: 100%; justify-content: center; margin-top: 10px;">حفظ التغييرات</button>
                 <button type="button" class="btn-action" style="width: 100%; justify-content: center; margin-top: 10px; background: #334155;" onclick="promptLogout()">تسجيل الخروج</button>
@@ -360,39 +394,6 @@
         <button class="bottom-nav-item" onclick="focusSearch()"><i class="fa-solid fa-magnifying-glass"></i><span>بحث</span></button>
         <button class="bottom-nav-item" onclick="toggleCart()"><i class="fa-solid fa-basket-shopping"></i><span class="cart-badge-bottom" id="cartCountBottom">0</span><span>السلة</span></button>
         <button class="bottom-nav-item" id="btnNavUser" onclick="handleBottomUserClick()"><i class="fa-solid fa-user"></i><span id="bottomNavUserText">حسابي</span></button>
-    </div>
-
-    <!-- Modal: تسجيل الدخول / إنشاء حساب -->
-    <div class="modal" id="authModal">
-        <div class="modal-content">
-            <span class="close-btn" onclick="closeModal('authModal')">&times;</span>
-            <h2 id="authModalTitle" style="color: var(--primary-color); margin-bottom: 10px; text-align: center;">تسجيل الدخول</h2>
-            
-            <form id="authForm" onsubmit="handleAuthSubmit(event)">
-                <div class="form-group" id="nameFieldGroup" style="display: none;">
-                    <label>الاسم الكامل</label>
-                    <input type="text" id="authName" placeholder="اسمك الكامل">
-                </div>
-                <div class="form-group">
-                    <label>البريد الإلكتروني</label>
-                    <input type="email" id="authEmail" required placeholder="name@example.com">
-                </div>
-                <div class="form-group" id="phoneFieldGroup" style="display: none;">
-                    <label>رقم الهاتف</label>
-                    <input type="tel" id="authPhone" placeholder="07XXXXXXXXX">
-                </div>
-                <div class="form-group">
-                    <label>كلمة المرور</label>
-                    <div class="password-container">
-                        <input type="password" id="authPassword" required placeholder="••••••••">
-                        <i class="fa-solid fa-eye toggle-password" onclick="togglePasswordVisibility('authPassword', this)"></i>
-                    </div>
-                    <span class="forgot-link" onclick="openForgotModal()">هل نسيت كلمة السر؟</span>
-                </div>
-                <button type="submit" class="btn-action" id="authSubmitBtn" style="width: 100%; justify-content: center; margin-top: 8px;">دخول</button>
-            </form>
-            <div class="form-switch-text"><span onclick="toggleAuthMode()" id="switchAuthText">ليس لديك حساب؟ انشاء حساب جديد</span></div>
-        </div>
     </div>
 
     <!-- Modal: استعادة كلمة السر عبر إرسال الرمز أوتوماتيكياً للبريد -->
@@ -554,7 +555,7 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
             document.querySelectorAll('.bottom-nav-item').forEach(b => b.classList.remove('active'));
             if (pageId === 'homePage') document.getElementById('btnNavHome').classList.add('active');
-            if (pageId === 'profilePage') document.getElementById('btnNavUser').classList.add('active');
+            if (pageId === 'profilePage' || pageId === 'authPageView') document.getElementById('btnNavUser').classList.add('active');
         }
 
         function updateAuthUI() {
@@ -563,7 +564,7 @@
             if (currentUser) {
                 if (navAuthArea) {
                     navAuthArea.innerHTML = `
-                        <div class="user-pill" onclick="openMyProfilePage()">
+                        <div class="user-pill" onclick="handleBottomUserClick()">
                             <img src="${currentUser.avatar || 'https://cdn-icons-png.flaticon.com/512/149/149071.png'}">
                             <span>${currentUser.name}</span>
                         </div>
@@ -574,16 +575,46 @@
                 if (bottomNavText) bottomNavText.innerText = currentUser.name.split(' ')[0];
             } else {
                 if (navAuthArea) {
-                    navAuthArea.innerHTML = `<button class="btn-action" onclick="openAuthModal()"><i class="fa-solid fa-user"></i> دخول</button>`;
+                    navAuthArea.innerHTML = `<button class="btn-action" onclick="handleBottomUserClick()"><i class="fa-solid fa-user"></i> دخول</button>`;
                 }
                 if (bottomNavText) bottomNavText.innerText = "حسابي";
             }
             updateCart();
         }
 
+        // عند النقر على "حسابي"، إذا كان مسجلاً تفتح صفحة البروفایل، وإلا تفتح صفحة تسجيل الدخول المستقلة
         function handleBottomUserClick() {
-            if (currentUser) openMyProfilePage();
-            else openAuthModal();
+            if (currentUser) {
+                openMyProfilePage();
+            } else {
+                openAuthPage();
+            }
+        }
+
+        function openAuthPage() {
+            document.getElementById('nameFieldGroup').style.display = "none";
+            document.getElementById('authPageTitle').innerText = "تسجيل الدخول";
+            document.getElementById('authSubmitBtn').innerText = "دخول";
+            document.getElementById('switchAuthText').innerText = "ليس لديك حساب؟ انشاء حساب جديد";
+            document.getElementById('standaloneAuthForm').reset();
+            switchPage('authPageView');
+        }
+
+        function toggleAuthMode() {
+            const nameGroup = document.getElementById('nameFieldGroup');
+            const isLogin = nameGroup.style.display === "none";
+            
+            if (isLogin) {
+                nameGroup.style.display = "block";
+                document.getElementById('authPageTitle').innerText = "إنشاء حساب جديد";
+                document.getElementById('authSubmitBtn').innerText = "انشاء الحساب";
+                document.getElementById('switchAuthText').innerText = "لديك حساب بالفعل؟ تسجيل الدخول";
+            } else {
+                nameGroup.style.display = "none";
+                document.getElementById('authPageTitle').innerText = "تسجيل الدخول";
+                document.getElementById('authSubmitBtn').innerText = "دخول";
+                document.getElementById('switchAuthText').innerText = "ليس لديك حساب؟ انشاء حساب جديد";
+            }
         }
 
         function promptLogout() { openModal('confirmLogoutModal'); }
@@ -598,13 +629,11 @@
         }
 
         function openMyProfilePage() {
-            if (!currentUser) { openAuthModal(); return; }
+            if (!currentUser) { openAuthPage(); return; }
             document.getElementById('profilePageAvatar').src = currentUser.avatar || 'https://cdn-icons-png.flaticon.com/512/149/149071.png';
             document.getElementById('profilePageName').innerText = currentUser.name;
             document.getElementById('profilePageEmail').innerText = currentUser.email;
-            document.getElementById('profilePagePhone').innerText = currentUser.phone ? `رقم الهاتف: ${currentUser.phone}` : '';
             document.getElementById('profileInputName').value = currentUser.name;
-            document.getElementById('profileInputPhone').value = currentUser.phone || '';
             switchPage('profilePage');
         }
 
@@ -628,7 +657,6 @@
             event.preventDefault();
             if (!currentUser) return;
             currentUser.name = document.getElementById('profileInputName').value.trim();
-            currentUser.phone = document.getElementById('profileInputPhone').value.trim();
             
             const uIndex = usersDB.findIndex(u => u.email === currentUser.email);
             if (uIndex !== -1) { usersDB[uIndex] = currentUser; localStorage.setItem('beshīqa_users', JSON.stringify(usersDB)); }
@@ -640,7 +668,6 @@
 
         /* --- استعادة كلمة السر عبر إرسال الرمز أوتوماتيكياً عبر EmailJS --- */
         function openForgotModal() {
-            closeModal('authModal');
             document.getElementById('forgotStep1').style.display = 'block';
             document.getElementById('forgotStep2').style.display = 'none';
             openModal('forgotModal');
@@ -666,9 +693,7 @@
 
             try {
                 alert('جاري إرسال رمز التحقق إلى بريدك الإلكتروني أوتوماتيكياً...');
-
-                await emailjs.send('service_cgjbwcm', 'template_6o8fthi', templateParams);
-                
+                await emailjs.send('service_cgjbwcm', 'template_6o8fthi', templateParams);[cite: 5, 8]
                 alert('تم إرسال رمز التحقق بنجاح إلى بريدك!');
                 
                 document.getElementById('forgotStep1').style.display = 'none';
@@ -697,7 +722,7 @@
                 localStorage.setItem('beshīqa_users', JSON.stringify(usersDB));
                 alert('تم تغيير كلمة المرور بنجاح!');
                 closeModal('forgotModal');
-                openAuthModal();
+                openAuthPage();
             }
         }
 
@@ -822,36 +847,6 @@
             renderRestaurants(restaurants.filter(r => r.name.toLowerCase().includes(query)));
         }
 
-        function openAuthModal() {
-            document.getElementById('nameFieldGroup').style.display = "none";
-            document.getElementById('phoneFieldGroup').style.display = "none";
-            document.getElementById('authModalTitle').innerText = "تسجيل الدخول";
-            document.getElementById('authSubmitBtn').innerText = "دخول";
-            document.getElementById('switchAuthText').innerText = "ليس لديك حساب؟ انشاء حساب جديد";
-            document.getElementById('authForm').reset();
-            openModal('authModal');
-        }
-
-        function toggleAuthMode() {
-            const nameGroup = document.getElementById('nameFieldGroup');
-            const phoneGroup = document.getElementById('phoneFieldGroup');
-            const isLogin = nameGroup.style.display === "none";
-            
-            if (isLogin) {
-                nameGroup.style.display = "block";
-                phoneGroup.style.display = "block";
-                document.getElementById('authModalTitle').innerText = "إنشاء حساب جديد";
-                document.getElementById('authSubmitBtn').innerText = "انشاء الحساب";
-                document.getElementById('switchAuthText').innerText = "لديك حساب بالفعل؟ تسجيل الدخول";
-            } else {
-                nameGroup.style.display = "none";
-                phoneGroup.style.display = "none";
-                document.getElementById('authModalTitle').innerText = "تسجيل الدخول";
-                document.getElementById('authSubmitBtn').innerText = "دخول";
-                document.getElementById('switchAuthText').innerText = "ليس لديك حساب؟ انشاء حساب جديد";
-            }
-        }
-
         function handleAuthSubmit(event) {
             event.preventDefault();
             const email = document.getElementById('authEmail').value.trim();
@@ -860,11 +855,10 @@
 
             if (isReg) {
                 const name = document.getElementById('authName').value.trim();
-                const phone = document.getElementById('authPhone').value.trim();
-                if (!phone) { alert('يرجى إدخال رقم الهاتف!'); return; }
                 if (usersDB.find(u => u.email === email)) { alert('البريد مسجل مسبقاً!'); return; }
                 
-                currentUser = { id: 'user_' + Date.now(), name, email, phone, password, avatar: 'https://cdn-icons-png.flaticon.com/512/149/149071.png' };
+                // تم إزالة رقم الهاتف هنا تماماً
+                currentUser = { id: 'user_' + Date.now(), name, email, password, avatar: 'https://cdn-icons-png.flaticon.com/512/149/149071.png' };
                 usersDB.push(currentUser);
                 localStorage.setItem('beshīqa_users', JSON.stringify(usersDB));
             } else {
@@ -873,13 +867,13 @@
                 currentUser = user;
             }
             localStorage.setItem('beshīqa_user', JSON.stringify(currentUser));
-            closeModal('authModal');
             updateAuthUI();
+            switchPage('homePage');
             renderRestaurants();
         }
 
         function openAddModal() {
-            if (!currentUser) { openAuthModal(); return; }
+            if (!currentUser) { openAuthPage(); return; }
             document.getElementById('addRestForm').reset();
             openModal('addRestaurantModal');
         }
