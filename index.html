@@ -10,7 +10,7 @@
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <script type="text/javascript">
        (function() {
-           emailjs.init("5DjBGwb-axb2ysSHu"); // تم وضع Public Key الخاص بك هنا[cite: 4]
+           emailjs.init("5DjBGwb-axb2ysSHu"); // Public Key الخاص بك[cite: 4]
        })();
     </script>
     <style>
@@ -625,8 +625,8 @@
             try {
                 alert('جاري إرسال رمز التحقق إلى بريدك الإلكتروني أوتوماتيكياً...');
 
-                // استبدل 'service_miut1ap' بمعرف الخدمة الخاص بك، و 'template_xxxxxxx' بمعرف القالب الخاص بك
-                await emailjs.send('service_miut1ap', 'template_xxxxxxx', templateParams);
+                // تم وضع Service ID الخاص بك هنا (service_cgjbwcm) وتستطيع تغيير الـ Template ID إن لزم الأمر
+                await emailjs.send('service_cgjbwcm', 'template_xxxxxxx', templateParams);
                 
                 alert('تم إرسال رمز التحقق بنجاح إلى بريدك!');
                 
@@ -635,7 +635,7 @@
 
             } catch (error) {
                 console.error('فشل الإرسال:', error);
-                alert('حدث خطأ أثناء إرسال البريد، تأكد من Service ID و Template ID.');
+                alert('حدث خطأ أثناء إرسال البريد، تأكد من Template ID في حسابك على EmailJS.');
             }
         }
 
