@@ -230,7 +230,7 @@
         .menu-item-name { font-weight: bold; font-size: 14px; margin-bottom: 4px; }
         .menu-item-price { color: var(--primary-color); font-size: 13px; font-weight: bold; margin-bottom: 8px; }
 
-        /* تصميم صفحة تسجيل الدخول المستقلة */
+        /* صفحة تسجيل الدخول / إنشاء الحساب المستقلة */
         .auth-page-container {
             max-width: 420px;
             margin: 30px auto;
@@ -241,7 +241,7 @@
             box-shadow: 0 10px 25px rgba(0,0,0,0.3);
         }
 
-        /* Modals الباقية */
+        /* Modals */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.85); z-index: 1000; justify-content: center; align-items: center; padding: 15px; backdrop-filter: blur(4px); }
         .modal-content { background-color: var(--card-bg); border-radius: 16px; width: 100%; max-width: 450px; max-height: 90vh; overflow-y: auto; border: 1px solid var(--border-color); position: relative; padding: 22px; }
         .close-btn { position: absolute; top: 15px; left: 15px; font-size: 22px; color: var(--text-muted); cursor: pointer; }
@@ -364,7 +364,7 @@
         </div>
     </div>
 
-    <!-- صفحة حسابي المخصصة (عندما يكون المستخدم مسجلاً دخوله) -->
+    <!-- صفحة حسابي المخصصة -->
     <div class="page-view" id="profilePage">
         <button class="back-btn" onclick="switchPage('homePage')"><i class="fa-solid fa-arrow-right"></i> العودة للرئيسية</button>
         <div class="profile-container">
@@ -396,13 +396,12 @@
         <button class="bottom-nav-item" id="btnNavUser" onclick="handleBottomUserClick()"><i class="fa-solid fa-user"></i><span id="bottomNavUserText">حسابي</span></button>
     </div>
 
-    <!-- Modal: استعادة كلمة السر عبر إرسال الرمز أوتوماتيكياً للبريد -->
+    <!-- Modal: استعادة كلمة السر -->
     <div class="modal" id="forgotModal">
         <div class="modal-content">
             <span class="close-btn" onclick="closeModal('forgotModal')">&times;</span>
             <h2 style="color: var(--primary-color); margin-bottom: 4px; text-align: center;">استعادة كلمة السر</h2>
             
-            <!-- الخطوة الأولى: إدخال البريد الإلكتروني -->
             <form id="forgotStep1" onsubmit="handleSendRealOtp(event)">
                 <div class="form-group">
                     <label>البريد الإلكتروني المسجل في حسابك</label>
@@ -413,7 +412,6 @@
                 </button>
             </form>
 
-            <!-- الخطوة الثانية: إدخال الرمز وكلمة المرور الجديدة -->
             <form id="forgotStep2" style="display: none;" onsubmit="handleVerifyRealOtp(event)">
                 <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px; text-align: center;">
                     تم إرسال رمز التحقق إلى بريدك الإلكتروني، يرجى كتابته هنا وتعيين كلمة المرور الجديدة:
@@ -448,7 +446,7 @@
         </div>
     </div>
 
-    <!-- Modal: إضافة مطعم عام -->
+    <!-- Modal: إضافة مطعم جديد -->
     <div class="modal" id="addRestaurantModal">
         <div class="modal-content">
             <span class="close-btn" onclick="closeModal('addRestaurantModal')">&times;</span>
@@ -535,9 +533,9 @@
         let tempRestImgBase64 = "";
         let tempMealImgBase64 = "";
 
-        // دالة إظهار وإخفاء كلمة المرور عبر أيقونة العين
         function togglePasswordVisibility(inputId, iconElement) {
             const inputField = document.getElementById(inputId);
+            if (!inputField) return;
             if (inputField.type === "password") {
                 inputField.type = "text";
                 iconElement.classList.remove("fa-eye");
@@ -551,7 +549,8 @@
 
         function switchPage(pageId) {
             document.querySelectorAll('.page-view').forEach(p => p.classList.remove('active'));
-            document.getElementById(pageId).classList.add('active');
+            const target = document.getElementById(pageId);
+            if (target) target.classList.add('active');
             window.scrollTo({ top: 0, behavior: 'smooth' });
             document.querySelectorAll('.bottom-nav-item').forEach(b => b.classList.remove('active'));
             if (pageId === 'homePage') document.getElementById('btnNavHome').classList.add('active');
@@ -582,7 +581,6 @@
             updateCart();
         }
 
-        // عند النقر على "حسابي"، إذا كان مسجلاً تفتح صفحة البروفایل، وإلا تفتح صفحة تسجيل الدخول المستقلة
         function handleBottomUserClick() {
             if (currentUser) {
                 openMyProfilePage();
@@ -666,7 +664,6 @@
             alert('تم حفظ البيانات بنجاح!');
         }
 
-        /* --- استعادة كلمة السر عبر إرسال الرمز أوتوماتيكياً عبر EmailJS --- */
         function openForgotModal() {
             document.getElementById('forgotStep1').style.display = 'block';
             document.getElementById('forgotStep2').style.display = 'none';
@@ -693,7 +690,7 @@
 
             try {
                 alert('جاري إرسال رمز التحقق إلى بريدك الإلكتروني أوتوماتيكياً...');
-                await emailjs.send('service_cgjbwcm', 'template_6o8fthi', templateParams);[cite: 5, 8]
+                await emailjs.send('service_cgjbwcm', 'template_6o8fthi', templateParams);
                 alert('تم إرسال رمز التحقق بنجاح إلى بريدك!');
                 
                 document.getElementById('forgotStep1').style.display = 'none';
@@ -740,18 +737,20 @@
 
             const menuContainer = document.getElementById('restPageMenuContainer');
             menuContainer.innerHTML = '';
-            rest.menu.forEach(item => {
-                menuContainer.innerHTML += `
-                    <div class="menu-item-card">
-                        <img src="${item.image}" class="menu-item-img">
-                        <div class="menu-item-details">
-                            <div class="menu-item-name">${item.name}</div>
-                            <div class="menu-item-price">${item.price.toLocaleString()} د.ع</div>
-                            <button class="btn-action" style="width: 100%; justify-content: center; font-size: 11px; padding: 6px;" onclick="addToCart('${item.name}', ${item.price})"><i class="fa-solid fa-plus"></i> للسلة</button>
+            if (rest.menu && Array.isArray(rest.menu)) {
+                rest.menu.forEach(item => {
+                    menuContainer.innerHTML += `
+                        <div class="menu-item-card">
+                            <img src="${item.image}" class="menu-item-img">
+                            <div class="menu-item-details">
+                                <div class="menu-item-name">${item.name}</div>
+                                <div class="menu-item-price">${item.price.toLocaleString()} د.ع</div>
+                                <button class="btn-action" style="width: 100%; justify-content: center; font-size: 11px; padding: 6px;" onclick="addToCart('${item.name}', ${item.price})"><i class="fa-solid fa-plus"></i> للسلة</button>
+                            </div>
                         </div>
-                    </div>
-                `;
-            });
+                    `;
+                });
+            }
             switchPage('restaurantDetailPage');
         }
 
@@ -813,6 +812,7 @@
             const container = document.getElementById('restaurantsContainer');
             if (!container) return;
             container.innerHTML = '';
+            if (!Array.isArray(data)) return;
             data.forEach(rest => {
                 let isOwner = currentUser && rest.ownerId === currentUser.id;
                 container.innerHTML += `
@@ -838,12 +838,14 @@
 
         function filterCategory(category, btn) {
             document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
+            if (btn) btn.classList.add('active');
             renderRestaurants(category === 'all' ? restaurants : restaurants.filter(r => r.category === category));
         }
 
         function filterRestaurants() {
-            const query = document.getElementById('searchInput').value.toLowerCase();
+            const queryInput = document.getElementById('searchInput');
+            if (!queryInput) return;
+            const query = queryInput.value.toLowerCase();
             renderRestaurants(restaurants.filter(r => r.name.toLowerCase().includes(query)));
         }
 
@@ -857,7 +859,6 @@
                 const name = document.getElementById('authName').value.trim();
                 if (usersDB.find(u => u.email === email)) { alert('البريد مسجل مسبقاً!'); return; }
                 
-                // تم إزالة رقم الهاتف هنا تماماً
                 currentUser = { id: 'user_' + Date.now(), name, email, password, avatar: 'https://cdn-icons-png.flaticon.com/512/149/149071.png' };
                 usersDB.push(currentUser);
                 localStorage.setItem('beshīqa_users', JSON.stringify(usersDB));
@@ -903,20 +904,26 @@
                     </div>
                 `;
             });
-            document.getElementById('cartCountBottom').innerText = count;
-            document.getElementById('cartTotal').innerText = total.toLocaleString() + ' د.ع';
+            const badge = document.getElementById('cartCountBottom');
+            if (badge) badge.innerText = count;
+            const totalElem = document.getElementById('cartTotal');
+            if (totalElem) totalElem.innerText = total.toLocaleString() + ' د.ع';
         }
 
-        function toggleCart() { document.getElementById('cartSidebar').classList.toggle('open'); }
+        function toggleCart() { 
+            const sidebar = document.getElementById('cartSidebar');
+            if (sidebar) sidebar.classList.toggle('open'); 
+        }
+
         function checkout() {
             if (cart.length === 0) return alert('السلة فارغة!');
             alert('تم استلام طلبك بنجاح!');
             cart = []; updateCart(); toggleCart();
         }
 
-        function focusSearch() { switchPage('homePage'); document.getElementById('searchInput').focus(); }
-        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
-        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+        function focusSearch() { switchPage('homePage'); const s = document.getElementById('searchInput'); if(s) s.focus(); }
+        function openModal(id) { const m = document.getElementById(id); if(m) m.style.display = 'flex'; }
+        function closeModal(id) { const m = document.getElementById(id); if(m) m.style.display = 'none'; }
 
         updateAuthUI();
         renderRestaurants();
