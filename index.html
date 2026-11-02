@@ -6,6 +6,13 @@
     <title>مطاعم بعشيقة | منصة طلب الطعام</title>
     <!-- FontAwesome للأيقونات -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- مكتبة EmailJS للإرسال الأوتوماتيكي -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script type="text/javascript">
+       (function() {
+           emailjs.init("5DjBGwb-axb2ysSHu"); // تم وضع Public Key الخاص بك هنا[cite: 4]
+       })();
+    </script>
     <style>
         :root {
             --primary-color: #ff5a00;
@@ -361,31 +368,31 @@
         </div>
     </div>
 
-    <!-- Modal: استعادة كلمة السر عبر الواتساب مع تعبئة تلقائية -->
+    <!-- Modal: استعادة كلمة السر عبر إرسال الرمز أوتوماتيكياً للبريد -->
     <div class="modal" id="forgotModal">
         <div class="modal-content">
             <span class="close-btn" onclick="closeModal('forgotModal')">&times;</span>
-            <h2 style="color: var(--primary-color); margin-bottom: 4px; text-align: center;">استعادة كلمة السر عبر الواتساب</h2>
+            <h2 style="color: var(--primary-color); margin-bottom: 4px; text-align: center;">استعادة كلمة السر</h2>
             
-            <!-- الخطوة الأولى: إدخال رقم الهاتف -->
-            <form id="forgotStep1" onsubmit="handleSendWhatsAppOtp(event)">
+            <!-- الخطوة الأولى: إدخال البريد الإلكتروني -->
+            <form id="forgotStep1" onsubmit="handleSendRealOtp(event)">
                 <div class="form-group">
-                    <label>أدخل رقم هاتفك المسجل في الحساب</label>
-                    <input type="tel" id="resetPhoneInput" required placeholder="07XXXXXXXXX">
+                    <label>البريد الإلكتروني المسجل في حسابك</label>
+                    <input type="email" id="resetEmailInput" required placeholder="name@example.com">
                 </div>
-                <button type="submit" class="btn-action" style="width: 100%; justify-content: center; background: #25D366;">
-                    <i class="fa-brands fa-whatsapp"></i> إرسال رمز التحقق وفتحه بالواتساب
+                <button type="submit" class="btn-action" style="width: 100%; justify-content: center;">
+                    <i class="fa-solid fa-paper-plane"></i> إرسال رمز التحقق أوتوماتيكياً
                 </button>
             </form>
 
             <!-- الخطوة الثانية: إدخال الرمز وكلمة المرور الجديدة -->
-            <form id="forgotStep2" style="display: none;" onsubmit="handleVerifyWhatsAppOtp(event)">
+            <form id="forgotStep2" style="display: none;" onsubmit="handleVerifyRealOtp(event)">
                 <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px; text-align: center;">
-                    تم توليد الرمز وتعبئته تلقائياً في الأسفل، وتم فتح الواتساب للإرسال:
+                    تم إرسال رمز التحقق إلى بريدك الإلكتروني، يرجى كتابته هنا وتعيين كلمة المرور الجديدة:
                 </p>
                 <div class="form-group">
-                    <label>رمز التحقق (تم ملؤه تلقائياً)</label>
-                    <input type="text" id="resetCodeInput" required placeholder="رمز التحقق" maxlength="6">
+                    <label>رمز التحقق (OTP)</label>
+                    <input type="text" id="resetCodeInput" required placeholder="أدخل الرمز المكون من 6 أرقام" maxlength="6">
                 </div>
                 <div class="form-group">
                     <label>كلمة المرور الجديدة</label>
@@ -491,8 +498,8 @@
         let currentUser = JSON.parse(localStorage.getItem('beshīqa_user')) || null;
         let cart = [];
         
-        let generatedWhatsAppOtp = null;
-        let targetUserPhone = null;
+        let generatedOtp = null;
+        let targetUserEmail = null;
 
         let tempRestImgBase64 = "";
         let tempMealImgBase64 = "";
@@ -587,7 +594,7 @@
             alert('تم حفظ البيانات بنجاح!');
         }
 
-        /* --- استعادة كلمة السر وتعبئة الرمز تلقائياً --- */
+        /* --- استعادة كلمة السر عبر إرسال الرمز أوتوماتيكياً عبر EmailJS --- */
         function openForgotModal() {
             closeModal('authModal');
             document.getElementById('forgotStep1').style.display = 'block';
@@ -595,46 +602,59 @@
             openModal('forgotModal');
         }
 
-        function handleSendWhatsAppOtp(event) {
+        async function handleSendRealOtp(event) {
             event.preventDefault();
-            const phone = document.getElementById('resetPhoneInput').value.trim();
+            const email = document.getElementById('resetEmailInput').value.trim();
             
-            const userExists = usersDB.find(u => u.phone === phone);
+            const userExists = usersDB.find(u => u.email === email);
             if (!userExists) {
-                alert('رقم الهاتف هذا غير مسجل لدينا في أي حساب!');
+                alert('البريد الإلكتروني غير مسجل لدينا في أي حساب!');
                 return;
             }
             
-            generatedWhatsAppOtp = Math.floor(100000 + Math.random() * 900000).toString();
-            targetUserPhone = phone;
+            // توليد رمز عشوائي مكون من 6 أرقام
+            generatedOtp = Math.floor(100000 + Math.random() * 900000).toString();
+            targetUserEmail = email;
             
-            document.getElementById('resetCodeInput').value = generatedWhatsAppOtp;
-            
-            const message = `رمز التحقق الخاص بك لإعادة تعيين كلمة السر في منصة مطاعم بعشيقة هو: ${generatedWhatsAppOtp}`;
-            const whatsappUrl = `https://wa.me/${phone.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(message)}`;
-            
-            window.open(whatsappUrl, '_blank');
-            
-            document.getElementById('forgotStep1').style.display = 'none';
-            document.getElementById('forgotStep2').style.display = 'block';
+            const templateParams = {
+                to_email: email,
+                to_name: userExists.name,
+                otp_code: generatedOtp
+            };
+
+            try {
+                alert('جاري إرسال رمز التحقق إلى بريدك الإلكتروني أوتوماتيكياً...');
+
+                // استبدل 'service_miut1ap' بمعرف الخدمة الخاص بك، و 'template_xxxxxxx' بمعرف القالب الخاص بك
+                await emailjs.send('service_miut1ap', 'template_xxxxxxx', templateParams);
+                
+                alert('تم إرسال رمز التحقق بنجاح إلى بريدك!');
+                
+                document.getElementById('forgotStep1').style.display = 'none';
+                document.getElementById('forgotStep2').style.display = 'block';
+
+            } catch (error) {
+                console.error('فشل الإرسال:', error);
+                alert('حدث خطأ أثناء إرسال البريد، تأكد من Service ID و Template ID.');
+            }
         }
 
-        function handleVerifyWhatsAppOtp(event) {
+        function handleVerifyRealOtp(event) {
             event.preventDefault();
             const enteredOtp = document.getElementById('resetCodeInput').value.trim();
             
-            if (enteredOtp !== generatedWhatsAppOtp) {
+            if (enteredOtp !== generatedOtp) {
                 alert('رمز التحقق غير صحيح!');
                 return;
             }
             
             const newPassword = document.getElementById('newResetPassword').value;
-            const uIdx = usersDB.findIndex(u => u.phone === targetUserPhone);
+            const uIdx = usersDB.findIndex(u => u.email === targetUserEmail);
             
             if (uIdx !== -1) {
                 usersDB[uIdx].password = newPassword;
                 localStorage.setItem('beshīqa_users', JSON.stringify(usersDB));
-                alert('تم تغيير كلمة السر بنجاح!');
+                alert('تم تغيير كلمة المرور بنجاح!');
                 closeModal('forgotModal');
                 openAuthModal();
             }
@@ -761,7 +781,6 @@
         }
 
         function openAuthModal() {
-            // الحالة الافتراضية: تسجيل الدخول
             document.getElementById('nameFieldGroup').style.display = "none";
             document.getElementById('phoneFieldGroup').style.display = "none";
             document.getElementById('authModalTitle').innerText = "تسجيل الدخول";
@@ -777,14 +796,12 @@
             const isLogin = nameGroup.style.display === "none";
             
             if (isLogin) {
-                // التحويل إلى وضع: إنشاء حساب جديد
                 nameGroup.style.display = "block";
                 phoneGroup.style.display = "block";
                 document.getElementById('authModalTitle').innerText = "إنشاء حساب جديد";
                 document.getElementById('authSubmitBtn').innerText = "انشاء الحساب";
                 document.getElementById('switchAuthText').innerText = "لديك حساب بالفعل؟ تسجيل الدخول";
             } else {
-                // التحويل إلى وضع: تسجيل الدخول
                 nameGroup.style.display = "none";
                 phoneGroup.style.display = "none";
                 document.getElementById('authModalTitle').innerText = "تسجيل الدخول";
