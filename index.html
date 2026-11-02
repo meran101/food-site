@@ -347,7 +347,7 @@
                     <input type="email" id="authEmail" required placeholder="name@example.com">
                 </div>
                 <div class="form-group" id="phoneFieldGroup" style="display: none;">
-                    <label>رقم الهاتف الأساسي</label>
+                    <label>رقم الهاتف</label>
                     <input type="tel" id="authPhone" placeholder="07XXXXXXXXX">
                 </div>
                 <div class="form-group">
@@ -357,7 +357,7 @@
                 </div>
                 <button type="submit" class="btn-action" id="authSubmitBtn" style="width: 100%; justify-content: center; margin-top: 8px;">دخول</button>
             </form>
-            <div class="form-switch-text"><span onclick="toggleAuthMode()" id="switchAuthText">إنشاء حساب جديد عبر البريد والهاتف</span></div>
+            <div class="form-switch-text"><span onclick="toggleAuthMode()" id="switchAuthText">ليس لديك حساب؟ انشاء حساب جديد</span></div>
         </div>
     </div>
 
@@ -605,14 +605,11 @@
                 return;
             }
             
-            // توليد رمز مكون من 6 أرقام
             generatedWhatsAppOtp = Math.floor(100000 + Math.random() * 900000).toString();
             targetUserPhone = phone;
             
-            // تعبئة الرمز تلقائياً في خانة الإدخال فوراً
             document.getElementById('resetCodeInput').value = generatedWhatsAppOtp;
             
-            // فتح تطبيق الواتساب لإرسال الرسالة
             const message = `رمز التحقق الخاص بك لإعادة تعيين كلمة السر في منصة مطاعم بعشيقة هو: ${generatedWhatsAppOtp}`;
             const whatsappUrl = `https://wa.me/${phone.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(message)}`;
             
@@ -764,19 +761,36 @@
         }
 
         function openAuthModal() {
+            // الحالة الافتراضية: تسجيل الدخول
             document.getElementById('nameFieldGroup').style.display = "none";
             document.getElementById('phoneFieldGroup').style.display = "none";
+            document.getElementById('authModalTitle').innerText = "تسجيل الدخول";
+            document.getElementById('authSubmitBtn').innerText = "دخول";
+            document.getElementById('switchAuthText').innerText = "ليس لديك حساب؟ انشاء حساب جديد";
+            document.getElementById('authForm').reset();
             openModal('authModal');
         }
 
         function toggleAuthMode() {
             const nameGroup = document.getElementById('nameFieldGroup');
             const phoneGroup = document.getElementById('phoneFieldGroup');
-            const isReg = nameGroup.style.display === "none";
-            nameGroup.style.display = isReg ? "block" : "none";
-            phoneGroup.style.display = isReg ? "block" : "none";
-            document.getElementById('authSubmitBtn').innerText = isReg ? "إنشاء الحساب" : "دخول";
-            document.getElementById('switchAuthText').innerText = isReg ? "لديك حساب؟ تسجيل الدخول" : "إنشاء حساب جديد عبر البريد والهاتف";
+            const isLogin = nameGroup.style.display === "none";
+            
+            if (isLogin) {
+                // التحويل إلى وضع: إنشاء حساب جديد
+                nameGroup.style.display = "block";
+                phoneGroup.style.display = "block";
+                document.getElementById('authModalTitle').innerText = "إنشاء حساب جديد";
+                document.getElementById('authSubmitBtn').innerText = "انشاء الحساب";
+                document.getElementById('switchAuthText').innerText = "لديك حساب بالفعل؟ تسجيل الدخول";
+            } else {
+                // التحويل إلى وضع: تسجيل الدخول
+                nameGroup.style.display = "none";
+                phoneGroup.style.display = "none";
+                document.getElementById('authModalTitle').innerText = "تسجيل الدخول";
+                document.getElementById('authSubmitBtn').innerText = "دخول";
+                document.getElementById('switchAuthText').innerText = "ليس لديك حساب؟ انشاء حساب جديد";
+            }
         }
 
         function handleAuthSubmit(event) {
