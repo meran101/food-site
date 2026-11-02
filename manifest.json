@@ -1,0 +1,13 @@
+{
+  "background_color": "#34d2a6",
+  "dir": "ltr",
+  "display": "standalone",
+  "name": "super food",
+  "orientation": "any",
+  "scope": "/",
+  "short_name": "SFD",
+  "start_url": "/",
+  "theme_color": "#ff453d",
+  "id": "bashiqafood.com",
+  "description": "تطبيق طلب الطعام والتوصيل في بعشيقة"
+}
