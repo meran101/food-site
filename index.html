@@ -616,17 +616,17 @@
             generatedOtp = Math.floor(100000 + Math.random() * 900000).toString();
             targetUserEmail = email;
             
+            // تم استخدام متغير passcode و email كما هو مطلوب في قالب EmailJS الافتراضي
             const templateParams = {
-                to_email: email,
-                to_name: userExists.name,
-                otp_code: generatedOtp
+                email: email,
+                passcode: generatedOtp
             };
 
             try {
                 alert('جاري إرسال رمز التحقق إلى بريدك الإلكتروني أوتوماتيكياً...');
 
-                // تم وضع Service ID الخاص بك هنا (service_cgjbwcm) وتستطيع تغيير الـ Template ID إن لزم الأمر
-                await emailjs.send('service_cgjbwcm', 'template_xxxxxxx', templateParams);
+                // استخدام الـ Service ID الخاص بك والـ Template ID الجديد (template_6o8fthi)
+                await emailjs.send('service_cgjbwcm', 'template_6o8fthi', templateParams);[cite: 5, 8]
                 
                 alert('تم إرسال رمز التحقق بنجاح إلى بريدك!');
                 
@@ -635,7 +635,7 @@
 
             } catch (error) {
                 console.error('فشل الإرسال:', error);
-                alert('حدث خطأ أثناء إرسال البريد، تأكد من Template ID في حسابك على EmailJS.');
+                alert('حدث خطأ أثناء إرسال البريد، تأكد من الاتصال بالإنترنت.');
             }
         }
 
