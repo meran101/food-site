@@ -239,14 +239,14 @@
         .form-group label { display: block; margin-bottom: 4px; font-size: 12px; color: var(--text-muted); }
         .form-group input, .form-group select { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); background-color: var(--bg-dark); color: #fff; outline: none; font-size: 13px; }
         
-        /* تصميم حاضنة حقل كلمة المرور مع أيقونة العين */
+        /* تصميم حقل كلمة المرور وأيقونة العين */
         .password-container {
             position: relative;
             width: 100%;
         }
         .password-container input {
             width: 100%;
-            padding-left: 38px; /* مساحة للأيقونة في اليسار */
+            padding-left: 38px;
         }
         .toggle-password {
             position: absolute;
@@ -667,7 +667,7 @@
             try {
                 alert('جاري إرسال رمز التحقق إلى بريدك الإلكتروني أوتوماتيكياً...');
 
-                await emailjs.send('service_cgjbwcm', 'template_6o8fthi', templateParams);[cite: 5, 8]
+                await emailjs.send('service_cgjbwcm', 'template_6o8fthi', templateParams);
                 
                 alert('تم إرسال رمز التحقق بنجاح إلى بريدك!');
                 
