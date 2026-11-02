@@ -306,11 +306,16 @@
                 </div>
                 <h2 id="profilePageName" style="color: var(--primary-color);"></h2>
                 <p id="profilePageEmail" style="color: var(--text-muted); font-size: 13px;"></p>
+                <p id="profilePagePhone" style="color: var(--text-muted); font-size: 13px;"></p>
             </div>
             <form onsubmit="handleSaveProfilePage(event)">
                 <div class="form-group">
                     <label>الاسم الكامل</label>
                     <input type="text" id="profileInputName" required>
+                </div>
+                <div class="form-group">
+                    <label>رقم الهاتف</label>
+                    <input type="tel" id="profileInputPhone" required>
                 </div>
                 <button type="submit" class="btn-action" style="width: 100%; justify-content: center; margin-top: 10px;">حفظ التغييرات</button>
                 <button type="button" class="btn-action" style="width: 100%; justify-content: center; margin-top: 10px; background: #334155;" onclick="promptLogout()">تسجيل الخروج</button>
@@ -326,7 +331,7 @@
         <button class="bottom-nav-item" id="btnNavUser" onclick="handleBottomUserClick()"><i class="fa-solid fa-user"></i><span id="bottomNavUserText">حسابي</span></button>
     </div>
 
-    <!-- Modal: تسجيل الدخول -->
+    <!-- Modal: تسجيل الدخول / إنشاء حساب -->
     <div class="modal" id="authModal">
         <div class="modal-content">
             <span class="close-btn" onclick="closeModal('authModal')">&times;</span>
@@ -341,6 +346,10 @@
                     <label>البريد الإلكتروني</label>
                     <input type="email" id="authEmail" required placeholder="name@example.com">
                 </div>
+                <div class="form-group" id="phoneFieldGroup" style="display: none;">
+                    <label>رقم الهاتف الأساسي</label>
+                    <input type="tel" id="authPhone" placeholder="07XXXXXXXXX">
+                </div>
                 <div class="form-group">
                     <label>كلمة المرور</label>
                     <input type="password" id="authPassword" required placeholder="••••••••">
@@ -348,32 +357,41 @@
                 </div>
                 <button type="submit" class="btn-action" id="authSubmitBtn" style="width: 100%; justify-content: center; margin-top: 8px;">دخول</button>
             </form>
-            <div class="form-switch-text"><span onclick="toggleAuthMode()" id="switchAuthText">إنشاء حساب جديد عبر البريد</span></div>
+            <div class="form-switch-text"><span onclick="toggleAuthMode()" id="switchAuthText">إنشاء حساب جديد عبر البريد والهاتف</span></div>
         </div>
     </div>
 
-    <!-- Modal: نسيت كلمة السر -->
+    <!-- Modal: استعادة كلمة السر عبر الواتساب مع تعبئة تلقائية -->
     <div class="modal" id="forgotModal">
         <div class="modal-content">
             <span class="close-btn" onclick="closeModal('forgotModal')">&times;</span>
-            <h2 style="color: var(--primary-color); margin-bottom: 4px; text-align: center;">إعادة تعيين كلمة السر</h2>
-            <form id="forgotStep1" onsubmit="handleSendResetCode(event)">
+            <h2 style="color: var(--primary-color); margin-bottom: 4px; text-align: center;">استعادة كلمة السر عبر الواتساب</h2>
+            
+            <!-- الخطوة الأولى: إدخال رقم الهاتف -->
+            <form id="forgotStep1" onsubmit="handleSendWhatsAppOtp(event)">
                 <div class="form-group">
-                    <label>البريد الإلكتروني</label>
-                    <input type="email" id="resetEmailInput" required placeholder="name@gmail.com">
+                    <label>أدخل رقم هاتفك المسجل في الحساب</label>
+                    <input type="tel" id="resetPhoneInput" required placeholder="07XXXXXXXXX">
                 </div>
-                <button type="submit" class="btn-action" style="width: 100%; justify-content: center;">إرسال رمز التحقق</button>
+                <button type="submit" class="btn-action" style="width: 100%; justify-content: center; background: #25D366;">
+                    <i class="fa-brands fa-whatsapp"></i> إرسال رمز التحقق وفتحه بالواتساب
+                </button>
             </form>
-            <form id="forgotStep2" style="display: none;" onsubmit="handleVerifyAndReset(event)">
+
+            <!-- الخطوة الثانية: إدخال الرمز وكلمة المرور الجديدة -->
+            <form id="forgotStep2" style="display: none;" onsubmit="handleVerifyWhatsAppOtp(event)">
+                <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px; text-align: center;">
+                    تم توليد الرمز وتعبئته تلقائياً في الأسفل، وتم فتح الواتساب للإرسال:
+                </p>
                 <div class="form-group">
-                    <label>رمز التحقق</label>
-                    <input type="text" id="resetCodeInput" required placeholder="مثال: 123456" maxlength="6">
+                    <label>رمز التحقق (تم ملؤه تلقائياً)</label>
+                    <input type="text" id="resetCodeInput" required placeholder="رمز التحقق" maxlength="6">
                 </div>
                 <div class="form-group">
                     <label>كلمة المرور الجديدة</label>
                     <input type="password" id="newResetPassword" required placeholder="••••••••">
                 </div>
-                <button type="submit" class="btn-action" style="width: 100%; justify-content: center;">تغيير كلمة المرور</button>
+                <button type="submit" class="btn-action" style="width: 100%; justify-content: center;">تأكيد وتغيير كلمة المرور</button>
             </form>
         </div>
     </div>
@@ -396,7 +414,7 @@
     <div class="modal" id="addRestaurantModal">
         <div class="modal-content">
             <span class="close-btn" onclick="closeModal('addRestaurantModal')">&times;</span>
-            <h2 style="color: var(--primary-color); margin-bottom: 12px;">إضافة مطعم جديد (سينشر محلياً للعامة)</h2>
+            <h2 style="color: var(--primary-color); margin-bottom: 12px;">إضافة مطعم جديد</h2>
             <form id="addRestForm" onsubmit="handleSaveRestaurant(event)">
                 <input type="hidden" id="editRestId">
                 <div class="form-group">
@@ -472,8 +490,10 @@
         let usersDB = JSON.parse(localStorage.getItem('beshīqa_users')) || [];
         let currentUser = JSON.parse(localStorage.getItem('beshīqa_user')) || null;
         let cart = [];
-        let generatedResetCode = null;
-        let resetUserEmail = null;
+        
+        let generatedWhatsAppOtp = null;
+        let targetUserPhone = null;
+
         let tempRestImgBase64 = "";
         let tempMealImgBase64 = "";
 
@@ -531,7 +551,9 @@
             document.getElementById('profilePageAvatar').src = currentUser.avatar || 'https://cdn-icons-png.flaticon.com/512/149/149071.png';
             document.getElementById('profilePageName').innerText = currentUser.name;
             document.getElementById('profilePageEmail').innerText = currentUser.email;
+            document.getElementById('profilePagePhone').innerText = currentUser.phone ? `رقم الهاتف: ${currentUser.phone}` : '';
             document.getElementById('profileInputName').value = currentUser.name;
+            document.getElementById('profileInputPhone').value = currentUser.phone || '';
             switchPage('profilePage');
         }
 
@@ -555,11 +577,17 @@
             event.preventDefault();
             if (!currentUser) return;
             currentUser.name = document.getElementById('profileInputName').value.trim();
+            currentUser.phone = document.getElementById('profileInputPhone').value.trim();
+            
+            const uIndex = usersDB.findIndex(u => u.email === currentUser.email);
+            if (uIndex !== -1) { usersDB[uIndex] = currentUser; localStorage.setItem('beshīqa_users', JSON.stringify(usersDB)); }
+            
             localStorage.setItem('beshīqa_user', JSON.stringify(currentUser));
             updateAuthUI();
-            alert('تم الحفظ بنجاح!');
+            alert('تم حفظ البيانات بنجاح!');
         }
 
+        /* --- استعادة كلمة السر وتعبئة الرمز تلقائياً --- */
         function openForgotModal() {
             closeModal('authModal');
             document.getElementById('forgotStep1').style.display = 'block';
@@ -567,26 +595,47 @@
             openModal('forgotModal');
         }
 
-        function handleSendResetCode(event) {
+        function handleSendWhatsAppOtp(event) {
             event.preventDefault();
-            resetUserEmail = document.getElementById('resetEmailInput').value.trim();
-            const userExists = usersDB.find(u => u.email === resetUserEmail);
-            if (!userExists) { alert('البريد غير مسجل!'); return; }
-            generatedResetCode = Math.floor(100000 + Math.random() * 900000).toString();
-            alert(`رمز التحقق لـ (${resetUserEmail}) هو: ${generatedResetCode}`);
+            const phone = document.getElementById('resetPhoneInput').value.trim();
+            
+            const userExists = usersDB.find(u => u.phone === phone);
+            if (!userExists) {
+                alert('رقم الهاتف هذا غير مسجل لدينا في أي حساب!');
+                return;
+            }
+            
+            // توليد رمز مكون من 6 أرقام
+            generatedWhatsAppOtp = Math.floor(100000 + Math.random() * 900000).toString();
+            targetUserPhone = phone;
+            
+            // تعبئة الرمز تلقائياً في خانة الإدخال فوراً
+            document.getElementById('resetCodeInput').value = generatedWhatsAppOtp;
+            
+            // فتح تطبيق الواتساب لإرسال الرسالة
+            const message = `رمز التحقق الخاص بك لإعادة تعيين كلمة السر في منصة مطاعم بعشيقة هو: ${generatedWhatsAppOtp}`;
+            const whatsappUrl = `https://wa.me/${phone.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(message)}`;
+            
+            window.open(whatsappUrl, '_blank');
+            
             document.getElementById('forgotStep1').style.display = 'none';
             document.getElementById('forgotStep2').style.display = 'block';
         }
 
-        function handleVerifyAndReset(event) {
+        function handleVerifyWhatsAppOtp(event) {
             event.preventDefault();
-            if (document.getElementById('resetCodeInput').value.trim() !== generatedResetCode) {
-                alert('رمز التحقق خاطئ!');
+            const enteredOtp = document.getElementById('resetCodeInput').value.trim();
+            
+            if (enteredOtp !== generatedWhatsAppOtp) {
+                alert('رمز التحقق غير صحيح!');
                 return;
             }
-            const uIdx = usersDB.findIndex(u => u.email === resetUserEmail);
+            
+            const newPassword = document.getElementById('newResetPassword').value;
+            const uIdx = usersDB.findIndex(u => u.phone === targetUserPhone);
+            
             if (uIdx !== -1) {
-                usersDB[uIdx].password = document.getElementById('newResetPassword').value;
+                usersDB[uIdx].password = newPassword;
                 localStorage.setItem('beshīqa_users', JSON.stringify(usersDB));
                 alert('تم تغيير كلمة السر بنجاح!');
                 closeModal('forgotModal');
@@ -716,15 +765,18 @@
 
         function openAuthModal() {
             document.getElementById('nameFieldGroup').style.display = "none";
+            document.getElementById('phoneFieldGroup').style.display = "none";
             openModal('authModal');
         }
 
         function toggleAuthMode() {
             const nameGroup = document.getElementById('nameFieldGroup');
+            const phoneGroup = document.getElementById('phoneFieldGroup');
             const isReg = nameGroup.style.display === "none";
             nameGroup.style.display = isReg ? "block" : "none";
+            phoneGroup.style.display = isReg ? "block" : "none";
             document.getElementById('authSubmitBtn').innerText = isReg ? "إنشاء الحساب" : "دخول";
-            document.getElementById('switchAuthText').innerText = isReg ? "لديك حساب؟ تسجيل الدخول" : "إنشاء حساب جديد عبر البريد";
+            document.getElementById('switchAuthText').innerText = isReg ? "لديك حساب؟ تسجيل الدخول" : "إنشاء حساب جديد عبر البريد والهاتف";
         }
 
         function handleAuthSubmit(event) {
@@ -735,13 +787,16 @@
 
             if (isReg) {
                 const name = document.getElementById('authName').value.trim();
+                const phone = document.getElementById('authPhone').value.trim();
+                if (!phone) { alert('يرجى إدخال رقم الهاتف!'); return; }
                 if (usersDB.find(u => u.email === email)) { alert('البريد مسجل مسبقاً!'); return; }
-                currentUser = { id: 'user_' + Date.now(), name, email, password, avatar: 'https://cdn-icons-png.flaticon.com/512/149/149071.png' };
+                
+                currentUser = { id: 'user_' + Date.now(), name, email, phone, password, avatar: 'https://cdn-icons-png.flaticon.com/512/149/149071.png' };
                 usersDB.push(currentUser);
                 localStorage.setItem('beshīqa_users', JSON.stringify(usersDB));
             } else {
                 const user = usersDB.find(u => u.email === email && u.password === password);
-                if (!user) { alert('خطأ في البيانات!'); return; }
+                if (!user) { alert('خطأ في بيانات الدخول (البريد أو كلمة المرور)!'); return; }
                 currentUser = user;
             }
             localStorage.setItem('beshīqa_user', JSON.stringify(currentUser));
