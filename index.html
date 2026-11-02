@@ -2,7 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>مطاعم بعشيقة | منصة طلب الطعام</title>
     <!-- FontAwesome للأيقونات -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -16,6 +16,7 @@
             --text-muted: #94a3b8;
             --accent-green: #22c55e;
             --border-color: #334155;
+            --bottom-nav-height: 60px;
         }
 
         * {
@@ -23,16 +24,17 @@
             margin: 0;
             padding: 0;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            -webkit-tap-highlight-color: transparent;
         }
 
         body {
             background-color: var(--bg-dark);
             color: var(--text-main);
             min-height: 100vh;
-            padding-bottom: 50px;
+            padding-bottom: calc(var(--bottom-nav-height) + 20px);
         }
 
-        /* Navbar */
+        /* Navbar العلوي */
         .navbar {
             background-color: rgba(30, 41, 59, 0.95);
             backdrop-filter: blur(10px);
@@ -40,20 +42,21 @@
             top: 0;
             z-index: 100;
             border-bottom: 1px solid var(--border-color);
-            padding: 15px 20px;
+            padding: 12px 15px;
         }
 
         .nav-container {
             max-width: 1200px;
             margin: 0 auto;
             display: flex;
+            flex-wrap: wrap;
             justify-content: space-between;
             align-items: center;
-            gap: 15px;
+            gap: 10px;
         }
 
         .logo {
-            font-size: 22px;
+            font-size: 20px;
             font-weight: 900;
             color: var(--primary-color);
             display: flex;
@@ -64,33 +67,34 @@
 
         .search-box {
             flex: 1;
-            max-width: 350px;
+            min-width: 200px;
             position: relative;
         }
 
         .search-box input {
             width: 100%;
-            padding: 10px 40px 10px 15px;
-            border-radius: 25px;
+            padding: 9px 38px 9px 12px;
+            border-radius: 20px;
             border: 1px solid var(--border-color);
             background-color: var(--bg-dark);
             color: #fff;
-            font-size: 14px;
+            font-size: 13px;
             outline: none;
         }
 
         .search-box i {
             position: absolute;
-            right: 15px;
+            right: 12px;
             top: 50%;
             transform: translateY(-50%);
             color: var(--text-muted);
+            font-size: 14px;
         }
 
-        .nav-actions {
+        .nav-actions-desktop {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
         }
 
         .btn-action {
@@ -102,32 +106,98 @@
             font-weight: 600;
             font-size: 13px;
             cursor: pointer;
-            display: flex;
+            display: inline-flex;
             align-items: center;
             gap: 6px;
-            transition: 0.3s;
+            transition: 0.2s;
         }
 
-        .btn-action:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(255, 90, 0, 0.4);
-        }
-
-        .cart-btn {
-            background-color: var(--bg-dark);
-            border: 1px solid var(--border-color);
-            position: relative;
+        .btn-action:active {
+            transform: scale(0.96);
         }
 
         .cart-count {
-            position: absolute;
-            top: -5px;
-            left: -5px;
             background-color: var(--primary-color);
             color: white;
             font-size: 11px;
-            width: 20px;
-            height: 20px;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .user-pill {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--bg-dark);
+            border: 1px solid var(--border-color);
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .user-pill img {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        /* Bottom Navigation للهاتف فقط */
+        .bottom-nav {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: var(--bottom-nav-height);
+            background-color: rgba(30, 41, 59, 0.98);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid var(--border-color);
+            z-index: 900;
+            justify-content: space-around;
+            align-items: center;
+        }
+
+        .bottom-nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 11px;
+            gap: 3px;
+            position: relative;
+            background: none;
+            border: none;
+            cursor: pointer;
+            width: 25%;
+            height: 100%;
+        }
+
+        .bottom-nav-item i {
+            font-size: 18px;
+        }
+
+        .bottom-nav-item.active, .bottom-nav-item:active {
+            color: var(--primary-color);
+        }
+
+        .bottom-nav-item .cart-badge-bottom {
+            position: absolute;
+            top: 6px;
+            right: 22%;
+            background-color: var(--primary-color);
+            color: white;
+            font-size: 10px;
+            width: 16px;
+            height: 16px;
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -135,128 +205,101 @@
             font-weight: bold;
         }
 
-        /* User Profile Pill in Nav */
-        .user-pill {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            background: var(--bg-dark);
-            border: 1px solid var(--border-color);
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 13px;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-
-        .user-pill:hover {
-            border-color: var(--primary-color);
-        }
-
-        .user-pill img {
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            object-fit: cover;
-        }
-
-        /* Container & Categories */
+        /* Main Container */
         .main-container {
             max-width: 1200px;
-            margin: 25px auto;
-            padding: 0 15px;
+            margin: 15px auto;
+            padding: 0 12px;
         }
 
+        /* التصنيفات بالتمرير الأفقي السلس للمس */
         .categories {
             display: flex;
-            gap: 12px;
+            gap: 10px;
             overflow-x: auto;
-            padding-bottom: 10px;
-            margin-bottom: 25px;
+            padding-bottom: 8px;
+            margin-bottom: 20px;
+            scrollbar-width: none; /* Firefox */
+        }
+        .categories::-webkit-scrollbar {
+            display: none; /* Chrome/Safari */
         }
 
         .category-btn {
             background-color: var(--card-bg);
             border: 1px solid var(--border-color);
             color: var(--text-main);
-            padding: 10px 20px;
+            padding: 8px 16px;
             border-radius: 20px;
             white-space: nowrap;
             cursor: pointer;
-            transition: 0.3s;
             display: flex;
             align-items: center;
-            gap: 8px;
-            font-size: 14px;
+            gap: 6px;
+            font-size: 13px;
+            flex-shrink: 0;
         }
 
-        .category-btn.active, .category-btn:hover {
+        .category-btn.active {
             background-color: var(--primary-color);
             border-color: var(--primary-color);
             color: white;
         }
 
         .section-title {
-            font-size: 20px;
+            font-size: 17px;
             font-weight: 700;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
         }
 
-        /* Restaurants Grid */
+        /* شبكة المطاعم */
         .restaurants-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 15px;
         }
 
         .restaurant-card {
             background-color: var(--card-bg);
-            border-radius: 16px;
+            border-radius: 14px;
             overflow: hidden;
             border: 1px solid var(--border-color);
-            transition: 0.3s;
             cursor: pointer;
             position: relative;
         }
 
-        .restaurant-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
-            border-color: var(--primary-color);
-        }
-
         .restaurant-img {
             width: 100%;
-            height: 160px;
+            height: 140px;
             object-fit: cover;
         }
 
         .restaurant-info {
-            padding: 15px;
+            padding: 12px;
         }
 
         .restaurant-name {
-            font-size: 18px;
+            font-size: 16px;
             font-weight: 700;
-            margin-bottom: 5px;
+            margin-bottom: 4px;
         }
 
         .restaurant-cat {
             color: var(--text-muted);
-            font-size: 13px;
-            margin-bottom: 12px;
+            font-size: 12px;
+            margin-bottom: 10px;
         }
 
         .restaurant-meta {
             display: flex;
             justify-content: space-between;
-            font-size: 13px;
+            font-size: 12px;
             color: var(--text-muted);
             border-top: 1px solid var(--border-color);
-            padding-top: 10px;
+            padding-top: 8px;
         }
 
         .rating {
@@ -266,17 +309,17 @@
 
         .owner-badge {
             position: absolute;
-            top: 10px;
-            right: 10px;
-            background: rgba(34, 197, 94, 0.9);
+            top: 8px;
+            right: 8px;
+            background: rgba(34, 197, 94, 0.95);
             color: white;
-            font-size: 11px;
-            padding: 4px 8px;
-            border-radius: 10px;
+            font-size: 10px;
+            padding: 3px 7px;
+            border-radius: 8px;
             font-weight: bold;
         }
 
-        /* Modal Styles */
+        /* النوافذ المنبثقة (Modals) للهاتف */
         .modal {
             display: none;
             position: fixed;
@@ -287,28 +330,34 @@
             background-color: rgba(0, 0, 0, 0.85);
             z-index: 1000;
             justify-content: center;
-            align-items: center;
-            padding: 15px;
-            backdrop-filter: blur(5px);
+            align-items: flex-end; /* تفتح من الأسفل بالهواتف */
+            backdrop-filter: blur(4px);
         }
 
         .modal-content {
             background-color: var(--card-bg);
-            border-radius: 20px;
+            border-radius: 20px 20px 0 0;
             width: 100%;
-            max-width: 750px;
-            max-height: 90vh;
+            max-width: 650px;
+            max-height: 85vh;
             overflow-y: auto;
             border: 1px solid var(--border-color);
+            border-bottom: none;
             position: relative;
-            padding: 30px;
+            padding: 20px 18px;
+            animation: slideUp 0.25s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
         }
 
         .close-btn {
             position: absolute;
             top: 15px;
-            left: 20px;
-            font-size: 24px;
+            left: 15px;
+            font-size: 22px;
             color: var(--text-muted);
             cursor: pointer;
             z-index: 10;
@@ -316,23 +365,23 @@
 
         .modal-header-img {
             width: 100%;
-            height: 180px;
+            height: 150px;
             object-fit: cover;
-            border-radius: 12px;
-            margin-bottom: 15px;
+            border-radius: 10px;
+            margin-bottom: 12px;
         }
 
-        /* Menu Grid */
+        /* قائمة الطعام بالمنفذ */
         .menu-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-            gap: 15px;
-            margin-top: 15px;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 12px;
+            margin-top: 12px;
         }
 
         .menu-item-card {
             background-color: var(--bg-dark);
-            border-radius: 12px;
+            border-radius: 10px;
             border: 1px solid var(--border-color);
             overflow: hidden;
             display: flex;
@@ -342,54 +391,54 @@
 
         .menu-item-img {
             width: 100%;
-            height: 110px;
+            height: 95px;
             object-fit: cover;
         }
 
         .menu-item-details {
-            padding: 12px;
+            padding: 8px;
         }
 
         .menu-item-name {
             font-weight: bold;
-            font-size: 15px;
-            margin-bottom: 5px;
+            font-size: 13px;
+            margin-bottom: 4px;
         }
 
         .menu-item-price {
             color: var(--primary-color);
-            font-size: 14px;
+            font-size: 13px;
             font-weight: bold;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
         }
 
-        /* Forms & Inputs */
+        /* النماذج */
         .form-group {
-            margin-bottom: 15px;
+            margin-bottom: 12px;
         }
 
         .form-group label {
             display: block;
-            margin-bottom: 5px;
-            font-size: 13px;
+            margin-bottom: 4px;
+            font-size: 12px;
             color: var(--text-muted);
         }
 
         .form-group input, .form-group select {
             width: 100%;
-            padding: 10px;
-            border-radius: 10px;
+            padding: 9px;
+            border-radius: 8px;
             border: 1px solid var(--border-color);
             background-color: var(--bg-dark);
             color: #fff;
             outline: none;
-            font-size: 14px;
+            font-size: 13px;
         }
 
         .form-switch-text {
             text-align: center;
-            margin-top: 15px;
-            font-size: 13px;
+            margin-top: 12px;
+            font-size: 12px;
             color: var(--text-muted);
         }
 
@@ -399,21 +448,21 @@
             font-weight: bold;
         }
 
-        /* Cart Sidebar */
+        /* قائمة السلة الجانبية/السفلية */
         .cart-sidebar {
             position: fixed;
             top: 0;
-            left: -400px;
+            left: -100%;
             width: 100%;
-            max-width: 380px;
+            max-width: 350px;
             height: 100%;
             background-color: var(--card-bg);
             z-index: 1100;
             box-shadow: 5px 0 25px rgba(0, 0, 0, 0.5);
-            transition: 0.4s ease;
+            transition: 0.3s ease;
             display: flex;
             flex-direction: column;
-            padding: 20px;
+            padding: 15px;
             border-right: 1px solid var(--border-color);
         }
 
@@ -424,21 +473,58 @@
         .cart-items {
             flex: 1;
             overflow-y: auto;
-            margin: 15px 0;
+            margin: 12px 0;
         }
 
         .cart-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 10px 0;
+            padding: 8px 0;
             border-bottom: 1px solid var(--border-color);
+        }
+
+        /* الاستجابة للشاشات الكبيرة والشاشات الصغيرة (Media Queries) */
+        @media (max-width: 768px) {
+            .nav-actions-desktop {
+                display: none; /* إخفاء أزرار الهيدر والاعتماد على Bottom Nav في الهاتف */
+            }
+
+            .bottom-nav {
+                display: flex; /* إظهار شريط التنقل السفلي للهاتف */
+            }
+
+            .restaurants-grid {
+                grid-template-columns: repeat(auto-fill, minmax(100%, 1fr));
+            }
+
+            .modal {
+                align-items: flex-end;
+            }
+
+            .modal-content {
+                border-radius: 18px 18px 0 0;
+                padding-bottom: calc(var(--bottom-nav-height) + 15px);
+            }
+
+            .cart-sidebar {
+                max-width: 100%; /* السلة تملأ الشاشة في الهواتف */
+            }
+        }
+
+        @media (min-width: 769px) {
+            .modal {
+                align-items: center;
+            }
+            .modal-content {
+                border-radius: 16px;
+            }
         }
     </style>
 </head>
 <body>
 
-    <!-- Navbar -->
+    <!-- Navbar العلوي -->
     <nav class="navbar">
         <div class="nav-container">
             <a href="#" class="logo"><i class="fa-solid fa-utensils"></i> مطاعم بعشيقة</a>
@@ -446,15 +532,14 @@
                 <i class="fa-solid fa-magnifying-glass"></i>
                 <input type="text" id="searchInput" placeholder="ابحث عن مطعم أو وجبة..." onkeyup="filterRestaurants()">
             </div>
-            <div class="nav-actions" id="navAuthArea">
-                <!-- سيتم تعبئتها ديناميكياً عبر الجافاسكريبت حسب حالة تسجيل الدخول -->
-            </div>
+            <!-- الأزرار للشاشات الكبيرة -->
+            <div class="nav-actions-desktop" id="navAuthArea"></div>
         </div>
     </nav>
 
     <!-- Main Content -->
     <div class="main-container">
-        <!-- Categories -->
+        <!-- التصنيفات بتمرير أفقي -->
         <div class="categories">
             <button class="category-btn active" onclick="filterCategory('all', this)"><i class="fa-solid fa-border-all"></i> الكل</button>
             <button class="category-btn" onclick="filterCategory('fastfood', this)"><i class="fa-solid fa-burger"></i> وجبات سريعة</button>
@@ -465,16 +550,37 @@
 
         <h2 class="section-title"><i class="fa-solid fa-store" style="color: var(--primary-color);"></i> المطاعم المتاحة</h2>
         
-        <!-- Restaurants Grid -->
+        <!-- قائمة المطاعم -->
         <div class="restaurants-grid" id="restaurantsContainer"></div>
+    </div>
+
+    <!-- شريط التنقل السفلي السريع للهاتف (Bottom Navigation Bar) -->
+    <div class="bottom-nav">
+        <button class="bottom-nav-item active" onclick="scrollToTop()">
+            <i class="fa-solid fa-house"></i>
+            <span>الرئيسية</span>
+        </button>
+        <button class="bottom-nav-item" onclick="focusSearch()">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <span>بحث</span>
+        </button>
+        <button class="bottom-nav-item" onclick="toggleCart()">
+            <i class="fa-solid fa-basket-shopping"></i>
+            <span class="cart-badge-bottom" id="cartCountBottom">0</span>
+            <span>السلة</span>
+        </button>
+        <button class="bottom-nav-item" id="bottomNavUserBtn" onclick="handleBottomUserClick()">
+            <i class="fa-solid fa-user"></i>
+            <span id="bottomNavUserText">حسابي</span>
+        </button>
     </div>
 
     <!-- Modal: Auth (Login / Register) -->
     <div class="modal" id="authModal">
-        <div class="modal-content" style="max-width: 400px;">
+        <div class="modal-content">
             <span class="close-btn" onclick="closeModal('authModal')">&times;</span>
-            <h2 id="authModalTitle" style="color: var(--primary-color); margin-bottom: 5px; text-align: center;">تسجيل الدخول</h2>
-            <p id="authModalSub" style="color: var(--text-muted); font-size: 13px; margin-bottom: 20px; text-align: center;">أدخل بريدك الإلكتروني وكلمة المرور للمتابعة</p>
+            <h2 id="authModalTitle" style="color: var(--primary-color); margin-bottom: 4px; text-align: center;">تسجيل الدخول</h2>
+            <p id="authModalSub" style="color: var(--text-muted); font-size: 12px; margin-bottom: 16px; text-align: center;">أدخل بيانات حسابك للمتابعة</p>
             
             <form id="authForm" onsubmit="handleAuthSubmit(event)">
                 <div class="form-group" id="nameFieldGroup" style="display: none;">
@@ -489,7 +595,7 @@
                     <label>كلمة المرور</label>
                     <input type="password" id="authPassword" required placeholder="••••••••">
                 </div>
-                <button type="submit" class="btn-action" id="authSubmitBtn" style="width: 100%; justify-content: center; margin-top: 10px;">دخول</button>
+                <button type="submit" class="btn-action" id="authSubmitBtn" style="width: 100%; justify-content: center; margin-top: 8px;">دخول</button>
             </form>
 
             <div class="form-switch-text" id="authSwitchText">
@@ -500,46 +606,47 @@
 
     <!-- Modal: Edit Profile -->
     <div class="modal" id="profileModal">
-        <div class="modal-content" style="max-width: 450px;">
+        <div class="modal-content">
             <span class="close-btn" onclick="closeModal('profileModal')">&times;</span>
-            <h2 style="color: var(--primary-color); margin-bottom: 15px;">تعديل الملف الشخصي</h2>
+            <h2 style="color: var(--primary-color); margin-bottom: 12px;">تعديل الملف الشخصي</h2>
             <form onsubmit="handleSaveProfile(event)">
                 <div class="form-group">
                     <label>الاسم الظاهر</label>
                     <input type="text" id="editProfileName" required>
                 </div>
                 <div class="form-group">
-                    <label>رابط الصورة الشخصية (Avatar URL)</label>
+                    <label>رابط الصورة الشخصية</label>
                     <input type="url" id="editProfileAvatar" required placeholder="https://example.com/avatar.jpg">
                 </div>
-                <button type="submit" class="btn-action" style="width: 100%; justify-content: center; margin-top: 10px;">حفظ التغييرات</button>
+                <button type="submit" class="btn-action" style="width: 100%; justify-content: center; margin-top: 8px;">حفظ التغييرات</button>
+                <button type="button" class="btn-action" style="width: 100%; justify-content: center; margin-top: 8px; background: #334155;" onclick="logout()">تسجيل الخروج</button>
             </form>
         </div>
     </div>
 
-    <!-- Modal: Restaurant Profile & Full Menu -->
+    <!-- Modal: Menu -->
     <div class="modal" id="menuModal">
         <div class="modal-content">
             <span class="close-btn" onclick="closeModal('menuModal')">&times;</span>
-            <img id="modalRestImg" class="modal-header-img" src="" alt="صورة المطعم">
-            <div style="display: flex; justify-content: space-between; align-items: center;">
+            <img id="modalRestImg" class="modal-header-img" src="" alt="مطعم">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
                 <div>
-                    <h2 id="modalRestName" style="color: var(--primary-color); margin-bottom: 5px;"></h2>
-                    <p id="modalRestCat" style="color: var(--text-muted); font-size: 13px; margin-bottom: 15px;"></p>
+                    <h2 id="modalRestName" style="color: var(--primary-color); font-size: 18px;"></h2>
+                    <p id="modalRestCat" style="color: var(--text-muted); font-size: 12px;"></p>
                 </div>
                 <div id="ownerActionsContainer"></div>
             </div>
             
-            <h3 style="border-bottom: 1px solid var(--border-color); padding-bottom: 8px; margin-top: 15px; margin-bottom: 15px;"><i class="fa-solid fa-utensils"></i> قائمة الطعام</h3>
+            <h3 style="border-bottom: 1px solid var(--border-color); padding-bottom: 6px; font-size: 14px;"><i class="fa-solid fa-utensils"></i> قائمة الطعام</h3>
             <div class="menu-grid" id="menuContainer"></div>
         </div>
     </div>
 
     <!-- Modal: Add / Edit Restaurant -->
     <div class="modal" id="addRestaurantModal">
-        <div class="modal-content" style="max-width: 600px;">
+        <div class="modal-content">
             <span class="close-btn" onclick="closeModal('addRestaurantModal')">&times;</span>
-            <h2 id="modalFormTitle" style="color: var(--primary-color); margin-bottom: 15px;">إضافة مطعم جديد</h2>
+            <h2 id="modalFormTitle" style="color: var(--primary-color); margin-bottom: 12px;">إضافة مطعم جديد</h2>
             <form id="addRestForm" onsubmit="handleSaveRestaurant(event)">
                 <input type="hidden" id="editRestId">
                 <div class="form-group">
@@ -569,9 +676,9 @@
                 </div>
                 <div class="form-group">
                     <label>سعر الوجبة (د.ع)</label>
-                    <input type="number" id="newItemPrice" required placeholder="مثال: 7000">
+                    <input type="number" id="newItemPrice" required placeholder="7000">
                 </div>
-                <button type="submit" class="btn-action" style="width: 100%; justify-content: center; margin-top: 10px;">حفظ المطعم</button>
+                <button type="submit" class="btn-action" style="width: 100%; justify-content: center; margin-top: 8px;">حفظ المطعم</button>
             </form>
         </div>
     </div>
@@ -579,12 +686,12 @@
     <!-- Cart Sidebar -->
     <div class="cart-sidebar" id="cartSidebar">
         <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 10px;">
-            <h3>سلة التسوق <i class="fa-solid fa-basket-shopping" style="color: var(--primary-color);"></i></h3>
+            <h3 style="font-size: 16px;">سلة التسوق <i class="fa-solid fa-basket-shopping" style="color: var(--primary-color);"></i></h3>
             <span style="cursor: pointer; font-size: 20px;" onclick="toggleCart()">&times;</span>
         </div>
         <div class="cart-items" id="cartItemsContainer"></div>
-        <div style="border-top: 1px solid var(--border-color); padding-top: 15px;">
-            <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+        <div style="border-top: 1px solid var(--border-color); padding-top: 12px;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 14px;">
                 <span>المجموع:</span>
                 <span id="cartTotal" style="color: var(--primary-color); font-weight: bold;">0 د.ع</span>
             </div>
@@ -593,7 +700,6 @@
     </div>
 
     <script>
-        // البيانات الافتراضية
         const defaultRestaurants = [
             {
                 id: 1,
@@ -626,32 +732,53 @@
         let usersDB = JSON.parse(localStorage.getItem('beshīqa_users')) || [];
         let currentUser = JSON.parse(localStorage.getItem('beshīqa_user')) || null;
         let cart = [];
-        let currentActiveRestId = null;
         let isRegisterMode = false;
 
-        // تحديث واجهة الهيدر (تسجيل الدخول / الملف الشخصي)
         function updateAuthUI() {
             const navAuthArea = document.getElementById('navAuthArea');
+            const bottomNavText = document.getElementById('bottomNavUserText');
+            
             if (currentUser) {
-                navAuthArea.innerHTML = `
-                    <div class="user-pill" onclick="openProfileModal()" title="تعديل الملف الشخصي">
-                        <img src="${currentUser.avatar || 'https://cdn-icons-png.flaticon.com/512/149/149071.png'}" alt="User">
-                        <span>${currentUser.name}</span>
-                    </div>
-                    <button class="btn-action" onclick="openAddModal()"><i class="fa-solid fa-plus"></i> إضافة مطعم</button>
-                    <button class="btn-action cart-btn" onclick="toggleCart()"><i class="fa-solid fa-cart-shopping"></i> <span class="cart-count" id="cartCount">0</span></button>
-                    <button class="btn-action" style="background: #334155;" onclick="logout()" title="تسجيل الخروج"><i class="fa-solid fa-right-from-bracket"></i></button>
-                `;
+                if (navAuthArea) {
+                    navAuthArea.innerHTML = `
+                        <div class="user-pill" onclick="openProfileModal()">
+                            <img src="${currentUser.avatar || 'https://cdn-icons-png.flaticon.com/512/149/149071.png'}">
+                            <span>${currentUser.name}</span>
+                        </div>
+                        <button class="btn-action" onclick="openAddModal()"><i class="fa-solid fa-plus"></i> إضافة</button>
+                        <button class="btn-action" style="background: #334155;" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i></button>
+                    `;
+                }
+                if (bottomNavText) bottomNavText.innerText = currentUser.name.split(' ')[0];
             } else {
-                navAuthArea.innerHTML = `
-                    <button class="btn-action" onclick="openAuthModal()"><i class="fa-solid fa-user"></i> تسجيل الدخول</button>
-                    <button class="btn-action cart-btn" onclick="toggleCart()"><i class="fa-solid fa-cart-shopping"></i> <span class="cart-count" id="cartCount">0</span></button>
-                `;
+                if (navAuthArea) {
+                    navAuthArea.innerHTML = `
+                        <button class="btn-action" onclick="openAuthModal()"><i class="fa-solid fa-user"></i> دخول</button>
+                    `;
+                }
+                if (bottomNavText) bottomNavText.innerText = "حسابي";
             }
             updateCart();
         }
 
-        // تبديل نافذة الدخول بين تسجيل الدخول وإنشاء حساب
+        function handleBottomUserClick() {
+            if (currentUser) {
+                openProfileModal();
+            } else {
+                openAuthModal();
+            }
+        }
+
+        function focusSearch() {
+            const searchInput = document.getElementById('searchInput');
+            searchInput.focus();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
         function openAuthModal() {
             isRegisterMode = false;
             updateAuthModalView();
@@ -672,7 +799,7 @@
 
             if (isRegisterMode) {
                 title.innerText = "إنشاء حساب جديد";
-                sub.innerText = "أدخل بياناتك لإنشاء حساب جديد واستخدامه في الموقع";
+                sub.innerText = "أدخل بياناتك لإنشاء حساب جديد";
                 nameGroup.style.display = "block";
                 document.getElementById('authName').required = true;
                 submitBtn.innerText = "إنشاء الحساب";
@@ -687,7 +814,6 @@
             }
         }
 
-        // معالجة إرسال نموذج الدخول أو التسجيل
         function handleAuthSubmit(event) {
             event.preventDefault();
             const email = document.getElementById('authEmail').value.trim();
@@ -695,10 +821,9 @@
 
             if (isRegisterMode) {
                 const name = document.getElementById('authName').value.trim();
-                // التحقق هل البريد مسجل مسبقاً
                 const existingUser = usersDB.find(u => u.email === email);
                 if (existingUser) {
-                    alert('هذا البريد الإلكتروني مسجل مسبقاً! يرجى تسجيل الدخول.');
+                    alert('هذا البريد الإلكتروني مسجل مسبقاً!');
                     return;
                 }
 
@@ -712,16 +837,14 @@
 
                 usersDB.push(newUser);
                 localStorage.setItem('beshīqa_users', JSON.stringify(usersDB));
-
                 currentUser = newUser;
                 localStorage.setItem('beshīqa_user', JSON.stringify(currentUser));
                 
                 closeModal('authModal');
                 updateAuthUI();
                 renderRestaurants();
-                alert('تم إنشاء الحساب وتسجيل الدخول بنجاح!');
+                alert('تم إنشاء الحساب بنجاح!');
             } else {
-                // محاولة تسجيل الدخول للمستخدم عبر البريد والباسورد
                 const foundUser = usersDB.find(u => u.email === email && u.password === password);
                 if (!foundUser) {
                     alert('البريد الإلكتروني أو كلمة المرور غير صحيحة!');
@@ -730,11 +853,9 @@
 
                 currentUser = foundUser;
                 localStorage.setItem('beshīqa_user', JSON.stringify(currentUser));
-
                 closeModal('authModal');
                 updateAuthUI();
                 renderRestaurants();
-                alert('مرحباً بعودتك، ' + currentUser.name + '!');
             }
             document.getElementById('authForm').reset();
         }
@@ -742,12 +863,11 @@
         function logout() {
             currentUser = null;
             localStorage.removeItem('beshīqa_user');
+            closeModal('profileModal');
             updateAuthUI();
             renderRestaurants();
-            alert('تم تسجيل الخروج بنجاح.');
         }
 
-        // تعديل الملف الشخصي
         function openProfileModal() {
             if (!currentUser) return;
             document.getElementById('editProfileName').value = currentUser.name;
@@ -762,7 +882,6 @@
             currentUser.name = document.getElementById('editProfileName').value.trim();
             currentUser.avatar = document.getElementById('editProfileAvatar').value.trim();
 
-            // تحديث في جدول المستخدمين العام أيضا
             const index = usersDB.findIndex(u => u.id === currentUser.id);
             if (index !== -1) {
                 usersDB[index] = currentUser;
@@ -772,10 +891,8 @@
             localStorage.setItem('beshīqa_user', JSON.stringify(currentUser));
             closeModal('profileModal');
             updateAuthUI();
-            alert('تم تحديث الملف الشخصي بنجاح!');
         }
 
-        // عرض المطاعم
         function renderRestaurants(data = restaurants) {
             const container = document.getElementById('restaurantsContainer');
             container.innerHTML = '';
@@ -804,7 +921,6 @@
             return names[cat] || cat;
         }
 
-        // تصفية المطاعم
         function filterCategory(category, btn) {
             document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
@@ -820,9 +936,7 @@
             renderRestaurants(restaurants.filter(r => r.name.toLowerCase().includes(query)));
         }
 
-        // فتح صفحة المطعم وقائمة الوجبات
         function openMenu(restId) {
-            currentActiveRestId = restId;
             const rest = restaurants.find(r => r.id === restId);
             document.getElementById('modalRestName').innerText = rest.name;
             document.getElementById('modalRestCat').innerText = getCategoryName(rest.category);
@@ -830,7 +944,7 @@
             
             const ownerActions = document.getElementById('ownerActionsContainer');
             if (currentUser && rest.ownerId === currentUser.id) {
-                ownerActions.innerHTML = `<button class="btn-action" onclick="openEditModal(${rest.id})"><i class="fa-solid fa-pen-to-square"></i> تعديل المطعم</button>`;
+                ownerActions.innerHTML = `<button class="btn-action" onclick="openEditModal(${rest.id})"><i class="fa-solid fa-pen-to-square"></i> تعديل</button>`;
             } else {
                 ownerActions.innerHTML = '';
             }
@@ -845,7 +959,7 @@
                         <div class="menu-item-details">
                             <div class="menu-item-name">${item.name}</div>
                             <div class="menu-item-price">${item.price.toLocaleString()} د.ع</div>
-                            <button class="btn-action" style="width: 100%; justify-content: center;" onclick="addToCart('${item.name}', ${item.price})"><i class="fa-solid fa-plus"></i> إضافة للسلة</button>
+                            <button class="btn-action" style="width: 100%; justify-content: center; font-size: 11px; padding: 6px;" onclick="addToCart('${item.name}', ${item.price})"><i class="fa-solid fa-plus"></i> للسلة</button>
                         </div>
                     </div>
                 `;
@@ -919,10 +1033,8 @@
             renderRestaurants();
             closeModal('addRestaurantModal');
             document.getElementById('addRestForm').reset();
-            alert('تم حفظ بيانات المطعم بنجاح!');
         }
 
-        // إدارة السلة
         function addToCart(name, price) {
             const existing = cart.find(item => item.name === name);
             if (existing) {
@@ -945,16 +1057,16 @@
                 cartContainer.innerHTML += `
                     <div class="cart-item">
                         <div>
-                            <div style="font-weight: bold; font-size: 14px;">${item.name}</div>
-                            <div style="color: var(--text-muted); font-size: 12px;">${item.price.toLocaleString()} د.ع</div>
+                            <div style="font-weight: bold; font-size: 13px;">${item.name}</div>
+                            <div style="color: var(--text-muted); font-size: 11px;">${item.price.toLocaleString()} د.ع</div>
                         </div>
-                        <span>x${item.qty}</span>
+                        <span style="font-size: 13px; font-weight: bold;">x${item.qty}</span>
                     </div>
                 `;
             });
 
-            const cartCountEl = document.getElementById('cartCount');
-            if (cartCountEl) cartCountEl.innerText = count;
+            const cartCountBottom = document.getElementById('cartCountBottom');
+            if (cartCountBottom) cartCountBottom.innerText = count;
             const cartTotalEl = document.getElementById('cartTotal');
             if (cartTotalEl) cartTotalEl.innerText = total.toLocaleString() + ' د.ع';
         }
@@ -974,11 +1086,9 @@
             toggleCart();
         }
 
-        // التحكم في النوافذ المنبثقة
         function openModal(id) { document.getElementById(id).style.display = 'flex'; }
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
-        // التشغيل الأولي
         updateAuthUI();
         renderRestaurants();
     </script>
