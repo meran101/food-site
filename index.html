@@ -127,19 +127,6 @@
             transform: scale(0.96);
         }
 
-        .cart-count {
-            background-color: var(--primary-color);
-            color: white;
-            font-size: 11px;
-            width: 18px;
-            height: 18px;
-            border-radius: 50%;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-        }
-
         .user-pill {
             display: flex;
             align-items: center;
@@ -596,7 +583,7 @@
                     <input type="text" id="profileInputName" required>
                 </div>
                 <button type="submit" class="btn-action" style="width: 100%; justify-content: center; margin-top: 10px;">حفظ التغييرات</button>
-                <button type="button" class="btn-action" style="width: 100%; justify-content: center; margin-top: 10px; background: #334155;" onclick="logout()">تسجيل الخروج</button>
+                <button type="button" class="btn-action" style="width: 100%; justify-content: center; margin-top: 10px; background: #334155;" onclick="promptLogout()">تسجيل الخروج</button>
             </form>
         </div>
     </div>
@@ -652,14 +639,13 @@
         </div>
     </div>
 
-    <!-- Modal: هل نسيت كلمة السر؟ (إعادة التعيين عبر كود التحقق) -->
+    <!-- Modal: هل نسيت كلمة السر؟ -->
     <div class="modal" id="forgotModal">
         <div class="modal-content">
             <span class="close-btn" onclick="closeModal('forgotModal')">&times;</span>
             <h2 style="color: var(--primary-color); margin-bottom: 4px; text-align: center;">إعادة تعيين كلمة السر</h2>
             <p style="color: var(--text-muted); font-size: 12px; margin-bottom: 16px; text-align: center;">أدخل بريدك المسجل لإرسال رمز التحقق</p>
             
-            <!-- الخطوة 1: البريد -->
             <form id="forgotStep1" onsubmit="handleSendResetCode(event)">
                 <div class="form-group">
                     <label>البريد الإلكتروني</label>
@@ -668,7 +654,6 @@
                 <button type="submit" class="btn-action" style="width: 100%; justify-content: center;">إرسال رمز التحقق</button>
             </form>
 
-            <!-- الخطوة 2: إدخال الرمز وكلمة المرور الجديدة -->
             <form id="forgotStep2" style="display: none;" onsubmit="handleVerifyAndReset(event)">
                 <div class="form-group">
                     <label>رمز التحقق (تم إرساله للبريد)</label>
@@ -680,6 +665,22 @@
                 </div>
                 <button type="submit" class="btn-action" style="width: 100%; justify-content: center;">تأكيد وتغيير كلمة المرور</button>
             </form>
+        </div>
+    </div>
+
+    <!-- Modal: تأكيد تسجيل الخروج -->
+    <div class="modal" id="confirmLogoutModal">
+        <div class="modal-content" style="text-align: center;">
+            <span class="close-btn" onclick="closeModal('confirmLogoutModal')">&times;</span>
+            <div style="font-size: 45px; color: var(--primary-color); margin-bottom: 10px;">
+                <i class="fa-solid fa-circle-question"></i>
+            </div>
+            <h3 style="margin-bottom: 8px;">تسجيل الخروج</h3>
+            <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 20px;">هل أنت تأكد من تسجيل الخروج من حسابك؟</p>
+            <div style="display: flex; gap: 10px; justify-content: center;">
+                <button class="btn-action" style="width: 50%; justify-content: center; background: var(--primary-color);" onclick="confirmLogout()">نعم، خروج</button>
+                <button class="btn-action" style="width: 50%; justify-content: center; background: #334155;" onclick="closeModal('confirmLogoutModal')">إلغاء</button>
+            </div>
         </div>
     </div>
 
@@ -780,13 +781,12 @@
         let tempRestImgBase64 = "";
         let tempMealImgBase64 = "";
 
-        // التنقل بين الصفحات Full Page Switching
+        // التنقل بين الصفحات
         function switchPage(pageId) {
             document.querySelectorAll('.page-view').forEach(p => p.classList.remove('active'));
             document.getElementById(pageId).classList.add('active');
             window.scrollTo({ top: 0, behavior: 'smooth' });
 
-            // تحديث حالة الأزرار في شريط السفلي
             document.querySelectorAll('.bottom-nav-item').forEach(b => b.classList.remove('active'));
             if (pageId === 'homePage') document.getElementById('btnNavHome').classList.add('active');
             if (pageId === 'profilePage') document.getElementById('btnNavUser').classList.add('active');
@@ -804,7 +804,7 @@
                             <span>${currentUser.name}</span>
                         </div>
                         <button class="btn-action" onclick="openAddModal()"><i class="fa-solid fa-plus"></i> إضافة مطعم</button>
-                        <button class="btn-action" style="background: #334155;" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i></button>
+                        <button class="btn-action" style="background: #334155;" onclick="promptLogout()" title="تسجيل الخروج"><i class="fa-solid fa-right-from-bracket"></i></button>
                     `;
                 }
                 if (bottomNavText) bottomNavText.innerText = currentUser.name.split(' ')[0];
@@ -827,7 +827,21 @@
             }
         }
 
-        // فتح صفحة "حسابي" المخصصة
+        // فتح نافذة التأكيد قبل تسجيل الخروج
+        function promptLogout() {
+            openModal('confirmLogoutModal');
+        }
+
+        // تنفيذ الخروج الفعلي بعد موافقة المستخدم
+        function confirmLogout() {
+            currentUser = null;
+            localStorage.removeItem('beshīqa_user');
+            closeModal('confirmLogoutModal');
+            switchPage('homePage');
+            updateAuthUI();
+            renderRestaurants();
+        }
+
         function openMyProfilePage() {
             if (!currentUser) {
                 openAuthModal();
@@ -840,7 +854,6 @@
             switchPage('profilePage');
         }
 
-        // اختيار صورة من المعرض وتغييرها باستخدام FileReader (Base64)
         function triggerAvatarUpload() {
             document.getElementById('avatarFileInput').click();
         }
@@ -880,7 +893,6 @@
             updateAuthUI();
         }
 
-        // هل نسيت كلمة السر؟ (إعادة التعيين)
         function openForgotModal() {
             closeModal('authModal');
             document.getElementById('forgotStep1').style.display = 'block';
@@ -898,7 +910,6 @@
                 return;
             }
 
-            // توليد رمز تحقق عشوائي من 6 أرقام ومحاكاة إرساله للبريد
             generatedResetCode = Math.floor(100000 + Math.random() * 900000).toString();
             alert(`تم إرسال رمز التحقق إلى بريدك الإلكتروني (${resetUserEmail}):\n\nرمز التحقق الخاص بك هو: ${generatedResetCode}`);
 
@@ -916,18 +927,16 @@
                 return;
             }
 
-            // تحديث كلمة السر للمستخدم
             const userIndex = usersDB.findIndex(u => u.email === resetUserEmail);
             if (userIndex !== -1) {
                 usersDB[userIndex].password = newPassword;
                 localStorage.setItem('beshīqa_users', JSON.stringify(usersDB));
-                alert('تم تغيير كلمة المرور بنجاح! يمكنك الآن تسجيل الدخول بكلمة المرور الجديدة.');
+                alert('تم تغيير كلمة المرور بنجاح! يمكنك الآن تسجيل الدخول.');
                 closeModal('forgotModal');
                 openAuthModal();
             }
         }
 
-        // فتح صفحة المطعم المستقلة بالكامل عند الضغط عليه
         function openRestaurantPage(restId) {
             const rest = restaurants.find(r => r.id === restId);
             if (!rest) return;
@@ -962,7 +971,6 @@
             switchPage('restaurantDetailPage');
         }
 
-        // معالجة اختيار صور المطعم والوجبة من الجهاز
         function handleRestImageFile(e) {
             const file = e.target.files[0];
             if (file) {
@@ -1003,7 +1011,6 @@
                     rest.menu = [{ id: Date.now(), name: itemName, price: itemPrice, image: mealImg }];
                 }
             } else {
-                // إنشاء ونشر المطعم للعامة
                 const newRest = {
                     id: Date.now(),
                     ownerId: currentUser.id,
@@ -1017,7 +1024,6 @@
                 restaurants.push(newRest);
             }
 
-            // حفظ في localStorage العام
             localStorage.setItem('beshīqa_restaurants', JSON.stringify(restaurants));
             renderRestaurants();
             closeModal('addRestaurantModal');
@@ -1107,14 +1113,6 @@
 
             localStorage.setItem('beshīqa_user', JSON.stringify(currentUser));
             closeModal('authModal');
-            updateAuthUI();
-            renderRestaurants();
-        }
-
-        function logout() {
-            currentUser = null;
-            localStorage.removeItem('beshīqa_user');
-            switchPage('homePage');
             updateAuthUI();
             renderRestaurants();
         }
