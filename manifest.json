@@ -12,13 +12,13 @@
   "description": "تطبيق طلب الطعام والتوصيل في بعشيقة",
   "icons": [
     {
-      "src": "https://meran101.github.io/food-site/android/android-launchericon-192-192.png",
+      "src": "https://www.pwabuilder.com/assets/images/pwabuilder-splash-logo.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "https://meran101.github.io/food-site/android/android-launchericon-512-512.png",
+      "src": "https://www.pwabuilder.com/assets/images/pwabuilder-splash-logo.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
