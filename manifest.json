@@ -1,27 +1,39 @@
 {
-  "background_color": "#34d2a6",
+  "id": "/food-site/",
+  "name": "super food",
+  "short_name": "SFD",
+  "description": "تطبيق طلب الطعام والتوصيل في بعشيقة",
   "dir": "ltr",
   "display": "standalone",
-  "name": "super food",
   "orientation": "any",
   "scope": "/food-site/",
-  "short_name": "SFD",
   "start_url": "/food-site/",
+  "background_color": "#34d2a6",
   "theme_color": "#ff453d",
-  "id": "bashiqafood.com",
-  "description": "تطبيق طلب الطعام والتوصيل في بعشيقة",
   "icons": [
     {
       "src": "android/android-launchericon-192-192.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
     },
     {
       "src": "android/android-launchericon-512-512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "android/android-launchericon-192-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "android/android-launchericon-512-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ]
 }
