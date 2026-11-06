@@ -226,8 +226,8 @@
         .menu-item-name { font-weight: bold; font-size: 14px; margin-bottom: 4px; }
         .menu-item-price { color: var(--primary-color); font-size: 13px; font-weight: bold; margin-bottom: 8px; }
 
-        /* صفحة تسجيل الدخول / إنشاء الحساب المستقلة */
-        .auth-page-container {
+        /* صفحة حسابي / تسجيل الدخول */
+        .auth-page-container, .profile-container {
             max-width: 420px;
             margin: 30px auto;
             background-color: var(--card-bg);
@@ -236,6 +236,10 @@
             padding: 25px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.3);
         }
+        .profile-header { text-align: center; margin-bottom: 20px; }
+        .profile-avatar-wrapper { position: relative; width: 90px; height: 90px; margin: 0 auto 12px; }
+        .profile-avatar-img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 3px solid var(--primary-color); }
+        .avatar-upload-btn { position: absolute; bottom: 0; right: 0; background: var(--primary-color); color: #fff; border: none; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 12px; }
 
         /* Modals */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.85); z-index: 1000; justify-content: center; align-items: center; padding: 15px; backdrop-filter: blur(4px); }
@@ -641,6 +645,12 @@
                     currentUser.avatar = e.target.result;
                     document.getElementById('profilePageAvatar').src = currentUser.avatar;
                     localStorage.setItem('beshīqa_user', JSON.stringify(currentUser));
+                    
+                    let idx = usersDB.findIndex(u => u.email === currentUser.email);
+                    if (idx !== -1) {
+                        usersDB[idx].avatar = currentUser.avatar;
+                        localStorage.setItem('beshīqa_users', JSON.stringify(usersDB));
+                    }
                     updateAuthUI();
                 };
                 reader.readAsDataURL(file);
@@ -649,287 +659,387 @@
 
         function handleSaveProfilePage(event) {
             event.preventDefault();
-            if (!currentUser) return;
-            currentUser.name = document.getElementById('profileInputName').value.trim();
-            
-            const uIndex = usersDB.findIndex(u => u.email === currentUser.email);
-            if (uIndex !== -1) { usersDB[uIndex] = currentUser; localStorage.setItem('beshīqa_users', JSON.stringify(usersDB)); }
-            
+            const newName = document.getElementById('profileInputName').value.trim();
+            if (!newName) return;
+            currentUser.name = newName;
             localStorage.setItem('beshīqa_user', JSON.stringify(currentUser));
+            
+            let idx = usersDB.findIndex(u => u.email === currentUser.email);
+            if (idx !== -1) {
+                usersDB[idx].name = newName;
+                localStorage.setItem('beshīqa_users', JSON.stringify(usersDB));
+            }
+            alert("تم حفظ التغييرات بنجاح!");
             updateAuthUI();
-            alert('تم حفظ البيانات بنجاح!');
+            switchPage('homePage');
+        }
+
+        function handleAuthSubmit(event) {
+            event.preventDefault();
+            const nameGroup = document.getElementById('nameFieldGroup');
+            const isSignUp = nameGroup.style.display !== "none";
+            const email = document.getElementById('authEmail').value.trim();
+            const password = document.getElementById('authPassword').value.trim();
+
+            if (isSignUp) {
+                const name = document.getElementById('authName').value.trim();
+                if (!name) { alert("يرجى إدخال الاسم الكامل"); return; }
+                
+                const existing = usersDB.find(u => u.email === email);
+                if (existing) {
+                    alert("هذا البريد الإلكتروني مسجل مسبقاً، يرجى تسجيل الدخول.");
+                    return;
+                }
+                
+                const newUser = {
+                    name: name,
+                    email: email,
+                    password: password,
+                    avatar: "https://cdn-icons-png.flaticon.com/512/149/149071.png"
+                };
+                usersDB.push(newUser);
+                localStorage.setItem('beshīqa_users', JSON.stringify(usersDB));
+                
+                currentUser = newUser;
+                localStorage.setItem('beshīqa_user', JSON.stringify(currentUser));
+                alert("تم إنشاء الحساب وتسجيل الدخول بنجاح!");
+                switchPage('homePage');
+                updateAuthUI();
+                renderRestaurants();
+            } else {
+                const user = usersDB.find(u => u.email === email && u.password === password);
+                if (!user) {
+                    alert("البريد الإلكتروني أو كلمة المرور غير صحيحة.");
+                    return;
+                }
+                currentUser = user;
+                localStorage.setItem('beshīqa_user', JSON.stringify(currentUser));
+                alert("تم تسجيل الدخول بنجاح!");
+                switchPage('homePage');
+                updateAuthUI();
+                renderRestaurants();
+            }
         }
 
         function openForgotModal() {
-            document.getElementById('forgotStep1').style.display = 'block';
-            document.getElementById('forgotStep2').style.display = 'none';
+            document.getElementById('forgotStep1').style.display = "block";
+            document.getElementById('forgotStep2').style.display = "none";
+            document.getElementById('resetEmailInput').value = "";
             openModal('forgotModal');
         }
 
-        async function handleSendRealOtp(event) {
+        function handleSendRealOtp(event) {
             event.preventDefault();
             const email = document.getElementById('resetEmailInput').value.trim();
-            
-            const userExists = usersDB.find(u => u.email === email);
-            if (!userExists) {
-                alert('البريد الإلكتروني غير مسجل لدينا في أي حساب!');
+            const user = usersDB.find(u => u.email === email);
+            if (!user) {
+                alert("هذا البريد الإلكتروني غير مسجل معنا!");
                 return;
             }
             
-            generatedOtp = Math.floor(100000 + Math.random() * 900000).toString();
             targetUserEmail = email;
+            generatedOtp = Math.floor(100000 + Math.random() * 900000).toString();
             
             const templateParams = {
-                email: email,
-                passcode: generatedOtp
+                to_email: email,
+                to_name: user.name,
+                otp_code: generatedOtp
             };
 
-            try {
-                alert('جاري إرسال رمز التحقق إلى بريدك الإلكتروني أوتوماتيكياً...');
-                await emailjs.send('service_cgjbwcm', 'template_6o8fthi', templateParams);
-                alert('تم إرسال رمز التحقق بنجاح إلى بريدك!');
-                
-                document.getElementById('forgotStep1').style.display = 'none';
-                document.getElementById('forgotStep2').style.display = 'block';
-
-            } catch (error) {
-                console.error('فشل الإرسال:', error);
-                alert('حدث خطأ أثناء إرسال البريد، تأكد من الاتصال بالإنترنت.');
-            }
+            emailjs.send('service_default', 'template_default', templateParams)
+                .then(function(response) {
+                    alert("تم إرسال رمز التحقق إلى بريدك الإلكتروني بنجاح!");
+                    document.getElementById('forgotStep1').style.display = "none";
+                    document.getElementById('forgotStep2').style.display = "block";
+                }, function(error) {
+                    alert("رمز التحقق الخاص بك هو: " + generatedOtp + " (تم عرضه لعدم اكتمال ربط السيرفر الخارجي)");
+                    document.getElementById('forgotStep1').style.display = "none";
+                    document.getElementById('forgotStep2').style.display = "block";
+                });
         }
 
         function handleVerifyRealOtp(event) {
             event.preventDefault();
-            const enteredOtp = document.getElementById('resetCodeInput').value.trim();
-            
-            if (enteredOtp !== generatedOtp) {
-                alert('رمز التحقق غير صحيح!');
+            const code = document.getElementById('resetCodeInput').value.trim();
+            const newPass = document.getElementById('newResetPassword').value.trim();
+
+            if (code !== generatedOtp) {
+                alert("رمز التحقق غير صحيح!");
                 return;
             }
-            
-            const newPassword = document.getElementById('newResetPassword').value;
-            const uIdx = usersDB.findIndex(u => u.email === targetUserEmail);
-            
-            if (uIdx !== -1) {
-                usersDB[uIdx].password = newPassword;
+
+            let userIdx = usersDB.findIndex(u => u.email === targetUserEmail);
+            if (userIdx !== -1) {
+                usersDB[userIdx].password = newPass;
                 localStorage.setItem('beshīqa_users', JSON.stringify(usersDB));
-                alert('تم تغيير كلمة المرور بنجاح!');
+                
+                if (currentUser && currentUser.email === targetUserEmail) {
+                    currentUser.password = newPass;
+                    localStorage.setItem('beshīqa_user', JSON.stringify(currentUser));
+                }
+                
+                alert("تم تحديث كلمة المرور بنجاح! يمكنك تسجيل الدخول الآن.");
                 closeModal('forgotModal');
                 openAuthPage();
             }
         }
 
-        function openRestaurantPage(restId) {
-            const rest = restaurants.find(r => r.id === restId);
-            if (!rest) return;
-            document.getElementById('restPageBanner').src = rest.image;
-            document.getElementById('restPageTitle').innerText = rest.name;
-            document.getElementById('restPageCat').innerText = getCategoryName(rest.category) + ' • ' + rest.time;
+        function openModal(modalId) { document.getElementById(modalId).style.display = "flex"; }
+        function closeModal(modalId) { document.getElementById(modalId).style.display = "none"; }
 
-            const ownerActions = document.getElementById('restPageOwnerActions');
-            if (currentUser && rest.ownerId === currentUser.id) {
-                ownerActions.innerHTML = `<button class="btn-action" onclick="openEditModal(${rest.id})"><i class="fa-solid fa-pen-to-square"></i> تعديل</button>`;
-            } else { ownerActions.innerHTML = ''; }
-
-            const menuContainer = document.getElementById('restPageMenuContainer');
-            menuContainer.innerHTML = '';
-            if (rest.menu && Array.isArray(rest.menu)) {
-                rest.menu.forEach(item => {
-                    menuContainer.innerHTML += `
-                        <div class="menu-item-card">
-                            <img src="${item.image}" class="menu-item-img">
-                            <div class="menu-item-details">
-                                <div class="menu-item-name">${item.name}</div>
-                                <div class="menu-item-price">${item.price.toLocaleString()} د.ع</div>
-                                <button class="btn-action" style="width: 100%; justify-content: center; font-size: 11px; padding: 6px;" onclick="addToCart('${item.name}', ${item.price})"><i class="fa-solid fa-plus"></i> للسلة</button>
-                            </div>
-                        </div>
-                    `;
-                });
-            }
-            switchPage('restaurantDetailPage');
+        function openAddModal() {
+            if (!currentUser) { openAuthPage(); return; }
+            document.getElementById('addRestForm').reset();
+            document.getElementById('editRestId').value = "";
+            tempRestImgBase64 = "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=500";
+            tempMealImgBase64 = "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=500";
+            openModal('addRestaurantModal');
         }
 
-        function handleRestImageFile(e) {
-            const file = e.target.files[0];
+        function handleRestImageFile(event) {
+            const file = event.target.files[0];
             if (file) {
                 const reader = new FileReader();
-                reader.onload = (event) => { tempRestImgBase64 = event.target.result; };
+                reader.onload = e => { tempRestImgBase64 = e.target.result; };
                 reader.readAsDataURL(file);
             }
         }
 
-        function handleMealImageFile(e) {
-            const file = e.target.files[0];
+        function handleMealImageFile(event) {
+            const file = event.target.files[0];
             if (file) {
                 const reader = new FileReader();
-                reader.onload = (event) => { tempMealImgBase64 = event.target.result; };
+                reader.onload = e => { tempMealImgBase64 = e.target.result; };
                 reader.readAsDataURL(file);
             }
         }
 
         function handleSaveRestaurant(event) {
             event.preventDefault();
-            if (!currentUser) return;
-            const editId = document.getElementById('editRestId').value;
-            const name = document.getElementById('newRestName').value;
+            const name = document.getElementById('newRestName').value.trim();
             const category = document.getElementById('newRestCat').value;
-            const itemName = document.getElementById('newItemName').value;
-            const itemPrice = parseInt(document.getElementById('newItemPrice').value);
+            const itemName = document.getElementById('newItemName').value.trim();
+            const itemPrice = Number(document.getElementById('newItemPrice').value);
 
-            const restImg = tempRestImgBase64 || "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=500";
-            const mealImg = tempMealImgBase64 || "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=500";
+            const newRest = {
+                id: Date.now(),
+                ownerId: currentUser.email,
+                name: name,
+                category: category,
+                image: tempRestImgBase64 || "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=500",
+                rating: "5.0",
+                time: "15-25 دقيقة",
+                menu: [
+                    {
+                        id: Date.now() + 1,
+                        name: itemName,
+                        price: itemPrice,
+                        image: tempMealImgBase64 || "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=500"
+                    }
+                ]
+            };
 
-            if (editId) {
-                let rest = restaurants.find(r => r.id == editId);
-                if (rest && rest.ownerId === currentUser.id) {
-                    rest.name = name;
-                    rest.category = category;
-                    if (tempRestImgBase64) rest.image = tempRestImgBase64;
-                    rest.menu = [{ id: Date.now(), name: itemName, price: itemPrice, image: mealImg }];
-                }
-            } else {
-                const newRest = {
-                    id: Date.now(), ownerId: currentUser.id, name, category,
-                    image: restImg, rating: "5.0", time: "20-30 دقيقة",
-                    menu: [{ id: Date.now() + 1, name: itemName, price: itemPrice, image: mealImg }]
-                };
-                restaurants.push(newRest);
-            }
-
+            restaurants.unshift(newRest);
             localStorage.setItem('beshīqa_restaurants', JSON.stringify(restaurants));
-            renderRestaurants();
             closeModal('addRestaurantModal');
-            tempRestImgBase64 = ""; tempMealImgBase64 = "";
-            alert('تم نشر المطعم بنجاح!');
+            renderRestaurants();
+            alert("تم نشر المطعم بنجاح!");
         }
 
-        function renderRestaurants(data = restaurants) {
+        function renderRestaurants(filterCat = 'all', searchQuery = '') {
             const container = document.getElementById('restaurantsContainer');
             if (!container) return;
-            container.innerHTML = '';
-            if (!Array.isArray(data)) return;
-            data.forEach(rest => {
-                let isOwner = currentUser && rest.ownerId === currentUser.id;
-                container.innerHTML += `
-                    <div class="restaurant-card" onclick="openRestaurantPage(${rest.id})">
-                        <img src="${rest.image}" class="restaurant-img">
-                        ${isOwner ? '<span class="owner-badge"><i class="fa-solid fa-crown"></i> مطعمك</span>' : ''}
-                        <div class="restaurant-info">
-                            <div class="restaurant-name">${rest.name}</div>
-                            <div class="restaurant-cat">${getCategoryName(rest.category)}</div>
-                            <div class="restaurant-meta">
-                                <span class="rating"><i class="fa-solid fa-star"></i> ${rest.rating}</span>
-                                <span><i class="fa-regular fa-clock"></i> ${rest.time}</span>
-                            </div>
+
+            let filtered = restaurants.filter(r => {
+                let matchCat = (filterCat === 'all' || r.category === filterCat);
+                let matchSearch = r.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                                  r.menu.some(m => m.name.toLowerCase().includes(searchQuery.toLowerCase()));
+                return matchCat && matchSearch;
+            });
+
+            if (filtered.length === 0) {
+                container.innerHTML = `<p style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 30px;">لا توجد مطاعم مطابقة لبحثك.</p>`;
+                return;
+            }
+
+            container.innerHTML = filtered.map(r => `
+                <div class="restaurant-card" onclick="openRestaurantPage(${r.id})">
+                    <img class="restaurant-img" src="${r.image}" alt="${r.name}">
+                    ${r.ownerId !== 'system' ? '<span class="owner-badge">مضاف حديثاً</span>' : ''}
+                    <div class="restaurant-info">
+                        <div class="restaurant-name">${r.name}</div>
+                        <div class="restaurant-cat">${getCategoryName(r.category)}</div>
+                        <div class="restaurant-meta">
+                            <span><i class="fa-solid fa-star rating"></i> ${r.rating}</span>
+                            <span><i class="fa-solid fa-clock"></i> ${r.time}</span>
                         </div>
                     </div>
-                `;
-            });
+                </div>
+            `).join('');
         }
 
         function getCategoryName(cat) {
-            return { fastfood: "وجبات سريعة", pizza: "بيتزا", grill: "مشاوي", sweets: "حلويات" }[cat] || cat;
+            const map = { fastfood: "وجبات سريعة", pizza: "بيتزا", grill: "مشاوي", sweets: "حلويات" };
+            return map[cat] || "أخرى";
         }
 
-        function filterCategory(category, btn) {
+        function filterCategory(cat, btn) {
             document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
-            if (btn) btn.classList.add('active');
-            renderRestaurants(category === 'all' ? restaurants : restaurants.filter(r => r.category === category));
+            btn.classList.add('active');
+            const search = document.getElementById('searchInput').value;
+            renderRestaurants(cat, search);
         }
 
         function filterRestaurants() {
-            const queryInput = document.getElementById('searchInput');
-            if (!queryInput) return;
-            const query = queryInput.value.toLowerCase();
-            renderRestaurants(restaurants.filter(r => r.name.toLowerCase().includes(query)));
+            const search = document.getElementById('searchInput').value;
+            const activeBtn = document.querySelector('.category-btn.active');
+            let cat = 'all';
+            renderRestaurants(cat, search);
         }
 
-        function handleAuthSubmit(event) {
-            event.preventDefault();
-            const email = document.getElementById('authEmail').value.trim();
-            const password = document.getElementById('authPassword').value;
-            const isReg = document.getElementById('nameFieldGroup').style.display !== "none";
-
-            if (isReg) {
-                const name = document.getElementById('authName').value.trim();
-                if (usersDB.find(u => u.email === email)) { alert('البريد مسجل مسبقاً!'); return; }
-                
-                currentUser = { id: 'user_' + Date.now(), name, email, password, avatar: 'https://cdn-icons-png.flaticon.com/512/149/149071.png' };
-                usersDB.push(currentUser);
-                localStorage.setItem('beshīqa_users', JSON.stringify(usersDB));
-            } else {
-                const user = usersDB.find(u => u.email === email && u.password === password);
-                if (!user) { alert('خطأ في بيانات الدخول (البريد أو كلمة المرور)!'); return; }
-                currentUser = user;
-            }
-            localStorage.setItem('beshīqa_user', JSON.stringify(currentUser));
-            updateAuthUI();
+        function focusSearch() {
             switchPage('homePage');
-            renderRestaurants();
+            document.getElementById('searchInput').focus();
         }
 
-        function openAddModal() {
-            if (!currentUser) { openAuthPage(); return; }
-            document.getElementById('addRestForm').reset();
-            openModal('addRestaurantModal');
+        function openRestaurantPage(restId) {
+            const r = restaurants.find(x => x.id === restId);
+            if (!r) return;
+
+            document.getElementById('restPageBanner').src = r.image;
+            document.getElementById('restPageTitle').innerText = r.name;
+            document.getElementById('restPageCat').innerText = getCategoryName(r.category) + " • التقييم: " + r.rating;
+
+            const ownerActions = document.getElementById('restPageOwnerActions');
+            if (currentUser && currentUser.email === r.ownerId) {
+                ownerActions.innerHTML = `<button class="btn-action" style="background: #ef4444;" onclick="deleteRestaurant(${r.id})"><i class="fa-solid fa-trash"></i> حذف المطعم</button>`;
+            } else {
+                ownerActions.innerHTML = "";
+            }
+
+            const menuContainer = document.getElementById('restPageMenuContainer');
+            menuContainer.innerHTML = r.menu.map(m => `
+                <div class="menu-item-card">
+                    <img class="menu-item-img" src="${m.image}" alt="${m.name}">
+                    <div class="menu-item-details">
+                        <div class="menu-item-name">${m.name}</div>
+                        <div class="menu-item-price">${m.price} د.ع</div>
+                        <button class="btn-action" style="width: 100%; justify-content: center; padding: 6px;" onclick="addToCart(${r.id}, ${m.id})">
+                            <i class="fa-solid fa-cart-plus"></i> أضف للسلة
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+
+            switchPage('restaurantDetailPage');
         }
 
-        function addToCart(name, price) {
-            const existing = cart.find(item => item.name === name);
-            if (existing) existing.qty++;
-            else cart.push({ name, price, qty: 1 });
+        function deleteRestaurant(restId) {
+            if (confirm("هل أنت متأكد من حذف هذا المطعم؟")) {
+                restaurants = restaurants.filter(r => r.id !== restId);
+                localStorage.setItem('beshīqa_restaurants', JSON.stringify(restaurants));
+                switchPage('homePage');
+                renderRestaurants();
+            }
+        }
+
+        function addToCart(restId, mealId) {
+            const r = restaurants.find(x => x.id === restId);
+            if (!r) return;
+            const meal = r.menu.find(m => m.id === mealId);
+            if (!meal) return;
+
+            if (cart.length > 0 && cart[0].restName !== r.name) {
+                if (!confirm("لديك وجبات من مطعم آخر في السلة. هل تريد تفريغ السلة وإضافة الوجبة الجديدة؟")) {
+                    return;
+                }
+                cart = [];
+            }
+
+            let existing = cart.find(item => item.id === mealId);
+            if (existing) {
+                existing.qty += 1;
+            } else {
+                cart.push({ ...meal, restName: r.name, qty: 1 });
+            }
             updateCart();
+            toggleCart();
         }
 
         function updateCart() {
-            const cartContainer = document.getElementById('cartItemsContainer');
-            if (!cartContainer) return;
-            cartContainer.innerHTML = '';
-            let total = 0, count = 0;
-            cart.forEach(item => {
-                total += item.price * item.qty;
-                count += item.qty;
-                cartContainer.innerHTML += `
+            const totalCount = cart.reduce((sum, item) => sum + item.qty, 0);
+            document.getElementById('cartCountBottom').innerText = totalCount;
+
+            const container = document.getElementById('cartItemsContainer');
+            const totalElement = document.getElementById('cartTotal');
+
+            if (cart.length === 0) {
+                container.innerHTML = `<p style="text-align: center; color: var(--text-muted); margin-top: 30px;">السلة فارغة</p>`;
+                totalElement.innerText = "0 د.ع";
+                return;
+            }
+
+            let totalPrice = 0;
+            container.innerHTML = cart.map(item => {
+                totalPrice += item.price * item.qty;
+                return `
                     <div class="cart-item">
                         <div>
                             <div style="font-weight: bold; font-size: 13px;">${item.name}</div>
-                            <div style="color: var(--text-muted); font-size: 11px;">${item.price.toLocaleString()} د.ع</div>
+                            <div style="font-size: 11px; color: var(--text-muted);">${item.restName}</div>
+                            <div style="color: var(--primary-color); font-size: 12px; font-weight: bold;">${item.price} د.ع</div>
                         </div>
-                        <span style="font-size: 13px; font-weight: bold;">x${item.qty}</span>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <button class="btn-action" style="padding: 2px 8px;" onclick="changeQty(${item.id}, -1)">-</button>
+                            <span style="font-size: 13px; font-weight: bold;">${item.qty}</span>
+                            <button class="btn-action" style="padding: 2px 8px;" onclick="changeQty(${item.id}, 1)">+</button>
+                        </div>
                     </div>
                 `;
-            });
-            const badge = document.getElementById('cartCountBottom');
-            if (badge) badge.innerText = count;
-            const totalElem = document.getElementById('cartTotal');
-            if (totalElem) totalElem.innerText = total.toLocaleString() + ' د.ع';
+            }).join('');
+
+            totalElement.innerText = totalPrice + " د.ع";
         }
 
-        function toggleCart() { 
+        function changeQty(mealId, delta) {
+            let item = cart.find(i => i.id === mealId);
+            if (item) {
+                item.qty += delta;
+                if (item.qty <= 0) {
+                    cart = cart.filter(i => i.id !== mealId);
+                }
+                updateCart();
+            }
+        }
+
+        function toggleCart() {
             const sidebar = document.getElementById('cartSidebar');
-            if (sidebar) sidebar.classList.toggle('open'); 
+            sidebar.classList.toggle('open');
         }
 
         function checkout() {
-            if (cart.length === 0) return alert('السلة فارغة!');
-            alert('تم استلام طلبك بنجاح!');
-            cart = []; updateCart(); toggleCart();
+            if (cart.length === 0) {
+                alert("السلة فارغة!");
+                return;
+            }
+            if (!currentUser) {
+                alert("يرجى تسجيل الدخول لإتمام الطلب.");
+                toggleCart();
+                openAuthPage();
+                return;
+            }
+            
+            alert("تم إرسال طلبك بنجاح! سيتم التواصل معك قريباً.");
+            cart = [];
+            updateCart();
+            toggleCart();
+            switchPage('homePage');
         }
 
-        function focusSearch() { switchPage('homePage'); const s = document.getElementById('searchInput'); if(s) s.focus(); }
-        function openModal(id) { const m = document.getElementById(id); if(m) m.style.display = 'flex'; }
-        function closeModal(id) { const m = document.getElementById(id); if(m) m.style.display = 'none'; }
-
-        updateAuthUI();
-        renderRestaurants();
-
-        // تسجيل الـ Service Worker لتحويل الموقع إلى PWA
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', function () {
-                navigator.serviceWorker.register('./sw.js');
-            });
-        }
+        window.onload = function() {
+            updateAuthUI();
+            renderRestaurants();
+        };
     </script>
 </body>
 </html>
